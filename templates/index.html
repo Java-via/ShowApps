@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="">
+
+<title>用户注册</title>
+
+<!-- Bootstrap core CSS -->
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="../static/css/signin.css" rel="stylesheet">
+
+<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+<script src="../static/js/ie-emulation-modes-warning.js"></script>
+
+<!-- <script language="" type="text/javascript">
+	</script> -->
+
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--&lt;!&ndash;[if lt IE 9]>-->
+      <!--<script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>-->
+      <!--<script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="btn-group" style="margin-right: 20%">
+			<button id="btn_back" class="btn btn-lg" type="button"
+				onclick="javascript:window.location.href='/webtest'">回到首页</button>
+			<button id="register_btn_back" class="btn btn-lg" type="button"
+				onclick="javascript:window.location.href='/webtest/login'">去登录</button>
+		</div>
+		<!-- action="/webtest/userlogin"   enctype="multipart/form-data"-->
+		<form class="form-signin" id="form">
+			<h2 class="form-signin-heading">请注册</h2>
+			<label for="inputEmail" class="sr-only">Email address</label> <input
+				type="email" id="inputEmail" name="userEmail" class="form-control"
+				placeholder="注册邮箱" required autofocus> <label
+				for="inputUserName" class="sr-only">User Name</label> <input
+				type="text" id="inputUserName" name="userName" class="form-control"
+				placeholder="用户名" required autofocus> <label
+				for="inputPassword" class="sr-only">Password</label> <input
+				type="password" id="inputPassword" name="userPwd"
+				class="form-control" placeholder="密码" required> <label
+				for="inputPasswordAgain" class="sr-only">Password Again</label> <input
+				type="password" id="inputPasswordAgain" name="userPwdAgain"
+				class="form-control" placeholder="确认密码" required>
+			<button id="register" class="btn btn-lg btn-primary btn-block"
+				type="button">注册</button>
+		</form>
+
+	</div>
+	<!-- /container -->
+
+
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+
+	<script src="../static/js/jquery.min.js"></script>
+
+	<script defer="defer" type="text/javascript">
+		$('#register')
+				.click(
+						function() {
+							{
+                                var data = {};
+                                data = $('#form').serialize();
+                   				 }
+							$
+									.ajax({
+										url : "/register", //请求的url地址
+										dataType : "json", //返回格式为json
+										/* async : true, //请求是否异步，默认为异步，这也是ajax重要特性 */
+										data : data,
+										/*{
+											userEmail : $(
+													"input[name='userEmail']")
+													.val(),
+											userName : $(
+													"input[name='userName']")
+													.val(),
+											userPwd : $("input[name='userPwd']")
+													.val(),
+											userPwdAgain : $(
+													"input[name='userPwdAgain']")
+													.val(),
+										}, //参数值 */
+										type : "POST", //请求方式
+										beforeSend : function() {
+											//请求前的处理
+											console.log(data)
+											if ($("input[name='userEmail']")
+													.val() == "") {
+												alert("注册邮箱不能为空");
+												return;
+											} else if ($(
+													"input[name='userName']")
+													.val() == "") {
+												alert("用户名不能为空");
+												return;
+											} else if ($(
+													"input[name='userPwd']")
+													.val() == "") {
+												alert("密码不能为空");
+												return;
+											} else if ($(
+													"input[name='userPwdAgain']")
+													.val() == "") {
+												alert("确认密码不能为空");
+												return;
+											} else if ($(
+													"input[name='userPwd']")
+													.val() != $(
+													"input[name='userPwdAgain']")
+													.val()) {
+												alert("两次密码输入不一致");
+												return;
+											}
+										},
+										success : function(data, status) {
+											//请求成功时处理
+											console.log(data);
+											var types = data;
+											if (types.msg.toString() != "恭喜您，注册成功,请前往邮箱激活账户") {
+												alert(data.msg.toString());
+											} else {
+												alert("注册成功，请登录");
+												window.location.href = "http://zhangjie.com:8090/webtest/login";
+											}
+										},
+										complete : function() {
+											//请求完成的处理
+										},
+										error : function(err) {
+											//请求出错处理
+											console.log(err);
+										}
+									});
+
+						});
+
+	</script>
+
+</body>
+</html>
