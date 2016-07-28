@@ -13,6 +13,8 @@ from tag_config.app_tags import *
 app = Flask(__name__)
 
 # moment = Moment(app)    # 初始化Flask-Moment
+a = "test"
+b = "test"
 
 
 @app.route('/')
