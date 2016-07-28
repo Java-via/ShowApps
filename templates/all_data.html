@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://v3.bootcss.com/examples/dashboard/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="../static/icon.jpg">
+
+    <title>应用数据统计</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/dashboard.css" rel="stylesheet">
+
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+    <script src="../static/js/echarts.common.min.js"></script>
+
+  </head>
+
+  <body>
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#" style="font-size: 30px">应用信息查询</a>    <!-- 可在此设置回首页 -->
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav navbar-right">
+                  <li><a href="#">账号设置</a></li>
+                  <li><a href="#">帮助信息</a></li>
+              </ul>
+              <form class="navbar-form navbar-right">
+                  <input type="text" class="form-control" placeholder="查询...">
+                  <button type="button" class="btn btn-default">查询</button>
+              </form>
+          </div>
+      </div>
+  </nav>
+
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-sm-3 col-md-2 sidebar" id="menu">
+              <ul class="nav nav-sidebar" id="soft_tags_list">
+                  <li class="active"><a href="#" style="font-size: large; color: white">软件 <span class="sr-only">(current)</span></a></li>
+              </ul>
+
+              <ul class="nav nav-sidebar" id="game_tags_list">
+                  <li class="active"><a href="#" style="font-size: large; color: white">游戏 <span class="sr-only"></span></a></li>
+              </ul>
+          </div>
+
+          <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+{#              <h1 class="page-header">Dashboard</h1>#}
+{##}
+{#              <div class="row placeholders">#}
+{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                      <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#                      <h4>Label</h4>#}
+{#                      <span class="text-muted">Something else</span>#}
+{#                  </div>#}
+{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                      <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#                      <h4>Label</h4>#}
+{#                      <span class="text-muted">Something else</span>#}
+{#                  </div>#}
+{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                      <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#                      <h4>Label</h4>#}
+{#                      <span class="text-muted">Something else</span>#}
+{#                  </div>#}
+{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                      <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#                      <h4>Label</h4>#}
+{#                      <span class="text-muted">Something else</span>#}
+{#                  </div>#}
+{#              </div>#}
+
+              <h2 class="sub-header">下载排行</h2>
+              <div class="row">
+                  <div class="col-md-6">
+                      <h4 >应用综合TOP10</h4>
+                      <div class="table-responsive">
+                          <table class="table table-striped" id="ranking_soft">
+                              <tr>
+                                  <th>ranking</th>
+                                  <th>name</th>
+                                  <th>install</th>
+                              </tr>
+                          </table>
+                      </div>
+                  </div>
+                  <div class="col-md-0.5"></div>
+                  <div class="col-md-6">
+                      <h4 >应用增速TOP10</h4>
+                      <div class="table-responsive">
+                          <table class="table table-striped" id="ranking_soft_speed">
+                              <tr>
+                                  <th>ranking</th>
+                                  <th>name</th>
+                                  <th>install</th>
+                              </tr>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-md-6">
+                      <h3 >游戏综合TOP10</h3>
+                      <div class="table-responsive">
+                          <table class="table table-striped" id="ranking_game">
+                              <tr>
+                                  <th>ranking</th>
+                                  <th>name</th>
+                                  <th>install</th>
+                              </tr>
+                          </table>
+                      </div>
+                  </div>
+                  <div class="col-md-0.5"></div>
+                  <div class="col-md-6">
+                      <h3 >游戏增速TOP10</h3>
+                      <div class="table-responsive">
+                          <table class="table table-striped" id="ranking_game_speed">
+                              <tr>
+                                  <th>ranking</th>
+                                  <th>name</th>
+                                  <th>install</th>
+                              </tr>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="../static/js/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+
+  <script defer="defer" type="text/javascript">
+      window.onload = function() {
+          $.ajax({
+              url: "/classify", //请求的url地址
+              dataType: "json", //返回格式为json
+              // async : true, //请求是否异步，默认为异步，这也是ajax重要特性
+              // data: data,    //参数值
+              type: "GET", //请求方式
+              beforeSend: function () {
+                  //请求前的处理
+              },
+              success: function (data) {
+                  //请求成功时处理
+                  console.log(data);
+                  var soft_tags = data[0];
+                  var game_tags = data[1];
+                  var ranking_soft = data[2]["rankinfo_soft"];
+                  var ranking_game = data[3]["rankinfo_game"];
+                  var name = [];
+                  var install = [];
+                  var tbody_soft = "";
+                  var tbody_game = "";
+                  var soft_list = "";
+                  var game_list = "";
+
+                  for (var soft_key in soft_tags) {
+                      soft_list += "<li><a href=&quot;#&quot;>" + soft_key + "</a></li>";
+                  }
+
+                  for (var game_key in game_tags) {
+                      game_list += "<li><a href=&quot;#&quot;>" + game_key + "</a></li>";
+                  }
+
+                  $("#soft_tags_list").append(soft_list);
+                  $("#game_tags_list").append(game_list);
+
+                  for(var item = 0; item < 10; item++) {
+                      name.push(ranking_soft[item][1].toString());
+                      install.push(ranking_soft[item][2]);
+                      tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_soft[item][2]
+                              + " width=30 height=30>"
+                              + "&nbsp;&nbsp;" + ranking_soft[item][1] +"</td><td>" + ranking_soft[item][3] + "</td></tr>";
+                  }
+
+                  for(var item = 0; item < 10; item++) {
+                      name.push(ranking_game[item][1].toString());
+                      install.push(ranking_game[item][2]);
+                      tbody_game += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_game[item][2]
+                              + " width=30 height=30>"
+                              + "&nbsp;&nbsp;" + ranking_game[item][1] +"</td><td>" + ranking_game[item][3] + "</td></tr>";
+                  }
+
+                  $("#ranking_soft").append(tbody_soft);
+                  $("#ranking_game").append(tbody_game);
+              },
+
+              complete: function () {
+                  //请求完成的处理
+              },
+
+              error: function (err) {
+                  //请求出错处理
+                  console.log(err);
+              }
+          });
+
+      }
+  </script>
+
+</body></html>
