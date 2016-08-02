@@ -45,8 +45,8 @@
 		<!-- action="/webtest/userlogin"   enctype="multipart/form-data"-->
 		<form class="form-signin" id="form">
 			<h2 class="form-signin-heading">请注册</h2>
-			<label for="inputEmail" class="sr-only">Email address</label> <input
-				type="email" id="inputEmail" name="userEmail" class="form-control"
+			<label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" id="inputEmail" name="userEmail" class="form-control"
 				placeholder="注册邮箱" required autofocus> <label
 				for="inputUserName" class="sr-only">User Name</label> <input
 				type="text" id="inputUserName" name="userName" class="form-control"
@@ -66,90 +66,62 @@
 
 
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="../../static/js/ie10-viewport-bug-workaround.js"></script>
+	<script src="../static/js/ie10-viewport-bug-workaround.js"></script>
 
-	<script src="../../static/js/jquery.min.js"></script>
+	<script src="../static/js/jquery.min.js"></script>
 
 	<script defer="defer" type="text/javascript">
 		$('#register')
-				.click(
-						function() {
-							{
-                                var data = {};
-                                data = $('#form').serialize();
-                   				 }
-							$
-									.ajax({
-										url : "/register", //请求的url地址
-										dataType : "json", //返回格式为json
-										/* async : true, //请求是否异步，默认为异步，这也是ajax重要特性 */
-										data : data,
-										/*{
-											userEmail : $(
-													"input[name='userEmail']")
-													.val(),
-											userName : $(
-													"input[name='userName']")
-													.val(),
-											userPwd : $("input[name='userPwd']")
-													.val(),
-											userPwdAgain : $(
-													"input[name='userPwdAgain']")
-													.val(),
-										}, //参数值 */
-										type : "POST", //请求方式
-										beforeSend : function() {
-											//请求前的处理
-											console.log(data)
-											if ($("input[name='userEmail']")
-													.val() == "") {
-												alert("注册邮箱不能为空");
-												return;
-											} else if ($(
-													"input[name='userName']")
-													.val() == "") {
-												alert("用户名不能为空");
-												return;
-											} else if ($(
-													"input[name='userPwd']")
-													.val() == "") {
-												alert("密码不能为空");
-												return;
-											} else if ($(
-													"input[name='userPwdAgain']")
-													.val() == "") {
-												alert("确认密码不能为空");
-												return;
-											} else if ($(
-													"input[name='userPwd']")
-													.val() != $(
-													"input[name='userPwdAgain']")
-													.val()) {
-												alert("两次密码输入不一致");
-												return;
-											}
-										},
-										success : function(data, status) {
-											//请求成功时处理
-											console.log(data);
-											var types = data;
-											if (types.msg.toString() != "恭喜您，注册成功,请前往邮箱激活账户") {
-												alert(data.msg.toString());
-											} else {
-												alert("注册成功，请登录");
-												window.location.href = "http://zhangjie.com:8090/webtest/login";
-											}
-										},
-										complete : function() {
-											//请求完成的处理
-										},
-										error : function(err) {
-											//请求出错处理
-											console.log(err);
-										}
-									});
-
-						});
+                .click(function() {
+                    {
+                        var data = {};
+                        data = $('#form').serialize();
+                    }$.ajax({
+                        url : "/register", //请求的url地址
+                        dataType : "json", //返回格式为json
+                        // /* async : true, //请求是否异步，默认为异步，这也是ajax重要特性 */
+                        data : data,
+                        type : "POST", //请求方式
+                        beforeSend : function() {
+                        // 请求前的处理
+                            console.log(data);
+                            if ($("input[name='userEmail']").val() == "") {
+                                alert("注册邮箱不能为空");
+                                return;
+                            } else if ($("input[name='userName']").val() == "") {
+                                alert("用户名不能为空");
+                                return;
+                            } else if ($("input[name='userPwd']").val() == "") {
+                                alert("密码不能为空");
+                                return;
+                            } else if ($("input[name='userPwdAgain']").val() == "") {
+                                alert("确认密码不能为空");
+                                return;
+                            } else if ($("input[name='userPwd']").val() != $("input[name='userPwdAgain']").val()) {
+                                alert("两次密码输入不一致");
+                                return;
+                            }
+                        },
+                        success : function(data, status) {
+                            //请求成功时处理
+                            console.log(data);
+                            var types = data;
+                            if (types.msg.toString() != "恭喜您，注册成功,请前往邮箱激活账户") {
+                                alert(data.msg.toString());
+                            } else {
+                                alert("注册成功，请登录");
+                                window.location.href = "http://zhangjie.com:8090/webtest/login";
+                            }
+                        },
+                        complete : function() {
+                            //请求完成的处理
+                            },
+                        error : function(err) {
+                            //请求出错处理
+                            console.log(err);
+                        }
+                    });
+                });
 
 	</script>
 

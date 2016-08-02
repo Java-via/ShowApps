@@ -176,10 +176,14 @@
                   var game_tags = data[1];
                   var ranking_soft = data[2]["rankinfo_soft"];
                   var ranking_game = data[3]["rankinfo_game"];
+                  var speed_soft = data[4]["speed_soft"];
+                  var speed_game = data[5]["speed_game"];
                   var name = [];
                   var install = [];
                   var tbody_soft = "";
                   var tbody_game = "";
+                  var tbody_soft_speed = "";
+                  var tbody_game_speed = "";
                   var soft_list = "";
                   var game_list = "";
 
@@ -195,6 +199,7 @@
                   $("#game_tags_list").append(game_list);
 
                   for(var item = 0; item < 10; item++) {
+                      console.log(ranking_soft);
                       name.push(ranking_soft[item][1].toString());
                       install.push(ranking_soft[item][2]);
                       tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_soft[item][2]
@@ -203,6 +208,7 @@
                   }
 
                   for(var item = 0; item < 10; item++) {
+                      console.log(ranking_game);
                       name.push(ranking_game[item][1].toString());
                       install.push(ranking_game[item][2]);
                       tbody_game += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_game[item][2]
@@ -212,6 +218,25 @@
 
                   $("#ranking_soft").append(tbody_soft);
                   $("#ranking_game").append(tbody_game);
+
+                  for(var item = 0; item < 10; item++) {
+                      name.push(speed_soft[item][1].toString());
+                      install.push(speed_soft[item][2]);
+                      tbody_soft_speed += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_soft[item][1]
+                              + " width=30 height=30>"
+                              + "&nbsp;&nbsp;" + speed_soft[item][3] +"</td><td>" + speed_soft[item][4] + "</td></tr>";
+                  }
+
+                  for(var item = 0; item < 10; item++) {
+                      name.push(speed_game[item][1].toString());
+                      install.push(speed_game[item][2]);
+                      tbody_game_speed += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_game[item][1]
+                              + " width=30 height=30>"
+                              + "&nbsp;&nbsp;" + speed_game[item][3] +"</td><td>" + speed_game[item][4] + "</td></tr>";
+                  }
+
+                  $("#ranking_soft_speed").append(tbody_soft_speed);
+                  $("#ranking_game_speed").append(tbody_game_speed);
               },
 
               complete: function () {
@@ -226,5 +251,59 @@
 
       }
   </script>
+
+{#  <script defer="defer" type="text/javascript">#}
+{#  $(function() {#}
+{#          $.ajax({#}
+{#              url: "/speed", //请求的url地址#}
+{#              dataType: "json", //返回格式为json#}
+{#              // async : true, //请求是否异步，默认为异步，这也是ajax重要特性#}
+{#              // data: data,    //参数值#}
+{#              type: "GET", //请求方式#}
+{#              beforeSend: function () {#}
+{#                  //请求前的处理#}
+{#              },#}
+{#              success: function (data) {#}
+{#                  //请求成功时处理#}
+{#                  console.log(data);#}
+{#                  var speed_soft = data[0]["speed_soft"];#}
+{#                  var speed_game = data[1]["speed_game"];#}
+{#                  var name = [];#}
+{#                  var install = [];#}
+{#                  var tbody_soft = "";#}
+{#                  var tbody_game = "";#}
+{##}
+{#                  for(var item = 0; item < 10; item++) {#}
+{#                      name.push(speed_soft[item][1].toString());#}
+{#                      install.push(speed_soft[item][2]);#}
+{#                      tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_soft[item][1]#}
+{#                              + " width=30 height=30>"#}
+{#                              + "&nbsp;&nbsp;" + speed_soft[item][3] +"</td><td>" + speed_soft[item][4] + "</td></tr>";#}
+{#                  }#}
+{##}
+{#                  for(var item = 0; item < 10; item++) {#}
+{#                      name.push(speed_game[item][1].toString());#}
+{#                      install.push(speed_game[item][2]);#}
+{#                      tbody_game += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_game[item][1]#}
+{#                              + " width=30 height=30>"#}
+{#                              + "&nbsp;&nbsp;" + speed_game[item][3] +"</td><td>" + speed_game[item][4] + "</td></tr>";#}
+{#                  }#}
+{##}
+{#                  $("#ranking_soft_speed").append(tbody_soft);#}
+{#                  $("#ranking_game_speed").append(tbody_game);#}
+{#              },#}
+{##}
+{#              complete: function () {#}
+{#                  //请求完成的处理#}
+{#              },#}
+{##}
+{#              error: function (err) {#}
+{#                  //请求出错处理#}
+{#                  console.log(err);#}
+{#              }#}
+{#          });#}
+{##}
+{#      })#}
+{#  </script>#}
 
 </body></html>
