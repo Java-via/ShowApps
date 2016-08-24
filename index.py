@@ -74,6 +74,7 @@ def get_classify():
 
         cur.execute("SELECT a_pkgname, a_name, a_picurl, a_install_sum FROM t_apps_addi_united "
                     "WHERE a_softgame = 'game' AND DATE(a_getdate) = %s ORDER BY a_install_sum DESC LIMIT 10;", yesterday)
+
         conn.commit()
         """0:pkgnamge 1:name 2:picurl 3:install"""
         dict_rank_game = [(item[0], item[1], item[2], int(item[3])) for item in cur.fetchall()]
@@ -116,6 +117,7 @@ def get_classify():
         #     f.close()
 
         return jsonify(soft_classify, game_classify, dict_rank_soft, dict_rank_game, dict_speed_soft, dict_speed_game)
+
     except Exception as e:
         logging.error(Exception, ":", e)
 
