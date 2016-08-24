@@ -62,30 +62,6 @@
           </div>
 
           <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-{#              <h1 class="page-header">Dashboard</h1>#}
-{##}
-{#              <div class="row placeholders">#}
-{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
-{#                      <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#                      <h4>Label</h4>#}
-{#                      <span class="text-muted">Something else</span>#}
-{#                  </div>#}
-{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
-{#                      <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#                      <h4>Label</h4>#}
-{#                      <span class="text-muted">Something else</span>#}
-{#                  </div>#}
-{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
-{#                      <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#                      <h4>Label</h4>#}
-{#                      <span class="text-muted">Something else</span>#}
-{#                  </div>#}
-{#                  <div class="col-xs-6 col-sm-3 placeholder">#}
-{#                      <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#                      <h4>Label</h4>#}
-{#                      <span class="text-muted">Something else</span>#}
-{#                  </div>#}
-{#              </div>#}
 
               <h2 class="sub-header">下载排行</h2>
               <div class="row">
@@ -202,7 +178,7 @@
                       console.log(ranking_soft);
                       name.push(ranking_soft[item][1].toString());
                       install.push(ranking_soft[item][2]);
-                      tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_soft[item][2]
+                      tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src='./static/pic/topsoft" + item + ".jpg'"
                               + " width=30 height=30>"
                               + "&nbsp;&nbsp;" + ranking_soft[item][1] +"</td><td>" + ranking_soft[item][3] + "</td></tr>";
                   }
@@ -211,7 +187,7 @@
                       console.log(ranking_game);
                       name.push(ranking_game[item][1].toString());
                       install.push(ranking_game[item][2]);
-                      tbody_game += "<tr><td>" + (item+1) + "</td><td><img src=" + ranking_game[item][2]
+                      tbody_game += "<tr><td>" + (item+1) + "</td><td><img src='./static/pic/topgame" + item + ".jpg'"
                               + " width=30 height=30>"
                               + "&nbsp;&nbsp;" + ranking_game[item][1] +"</td><td>" + ranking_game[item][3] + "</td></tr>";
                   }
@@ -222,7 +198,7 @@
                   for(var item = 0; item < 10; item++) {
                       name.push(speed_soft[item][1].toString());
                       install.push(speed_soft[item][2]);
-                      tbody_soft_speed += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_soft[item][1]
+                      tbody_soft_speed += "<tr><td>" + (item+1) + "</td><td><img src='./static/pic/speedsoft" + item + ".jpg'"
                               + " width=30 height=30>"
                               + "&nbsp;&nbsp;" + speed_soft[item][3] +"</td><td>" + speed_soft[item][4] + "</td></tr>";
                   }
@@ -230,7 +206,7 @@
                   for(var item = 0; item < 10; item++) {
                       name.push(speed_game[item][1].toString());
                       install.push(speed_game[item][2]);
-                      tbody_game_speed += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_game[item][1]
+                      tbody_game_speed += "<tr><td>" + (item+1) + "</td><td><img src='./static/pic/speedgame" + item + ".jpg'"
                               + " width=30 height=30>"
                               + "&nbsp;&nbsp;" + speed_game[item][3] +"</td><td>" + speed_game[item][4] + "</td></tr>";
                   }
@@ -249,61 +225,8 @@
               }
           });
 
+
       }
   </script>
-
-{#  <script defer="defer" type="text/javascript">#}
-{#  $(function() {#}
-{#          $.ajax({#}
-{#              url: "/speed", //请求的url地址#}
-{#              dataType: "json", //返回格式为json#}
-{#              // async : true, //请求是否异步，默认为异步，这也是ajax重要特性#}
-{#              // data: data,    //参数值#}
-{#              type: "GET", //请求方式#}
-{#              beforeSend: function () {#}
-{#                  //请求前的处理#}
-{#              },#}
-{#              success: function (data) {#}
-{#                  //请求成功时处理#}
-{#                  console.log(data);#}
-{#                  var speed_soft = data[0]["speed_soft"];#}
-{#                  var speed_game = data[1]["speed_game"];#}
-{#                  var name = [];#}
-{#                  var install = [];#}
-{#                  var tbody_soft = "";#}
-{#                  var tbody_game = "";#}
-{##}
-{#                  for(var item = 0; item < 10; item++) {#}
-{#                      name.push(speed_soft[item][1].toString());#}
-{#                      install.push(speed_soft[item][2]);#}
-{#                      tbody_soft += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_soft[item][1]#}
-{#                              + " width=30 height=30>"#}
-{#                              + "&nbsp;&nbsp;" + speed_soft[item][3] +"</td><td>" + speed_soft[item][4] + "</td></tr>";#}
-{#                  }#}
-{##}
-{#                  for(var item = 0; item < 10; item++) {#}
-{#                      name.push(speed_game[item][1].toString());#}
-{#                      install.push(speed_game[item][2]);#}
-{#                      tbody_game += "<tr><td>" + (item+1) + "</td><td><img src=" + speed_game[item][1]#}
-{#                              + " width=30 height=30>"#}
-{#                              + "&nbsp;&nbsp;" + speed_game[item][3] +"</td><td>" + speed_game[item][4] + "</td></tr>";#}
-{#                  }#}
-{##}
-{#                  $("#ranking_soft_speed").append(tbody_soft);#}
-{#                  $("#ranking_game_speed").append(tbody_game);#}
-{#              },#}
-{##}
-{#              complete: function () {#}
-{#                  //请求完成的处理#}
-{#              },#}
-{##}
-{#              error: function (err) {#}
-{#                  //请求出错处理#}
-{#                  console.log(err);#}
-{#              }#}
-{#          });#}
-{##}
-{#      })#}
-{#  </script>#}
 
 </body></html>
