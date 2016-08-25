@@ -136,7 +136,7 @@
                         for(var l=0; l<game.length; l++) {
                             for(var g_date in game[l]) {
                                 game_date_arr.push(g_date);
-                                game_date_install.push(soft[l][g_date]);
+                                game_date_install.push(game[l][g_date]);
                             }
                         }
                         game_install_arr.push(game_date_install);
@@ -147,82 +147,46 @@
                 var gameChart = echarts.init($("#chart_game").get(0));
                 var soft_option = {
                     title: {
-                        text: '应用下载TOP5'
+                        text: '应用游戏TOP5'
                     },
-                    tooltip : {
-                        trigger: 'axis'
-                    },
+                    tooltip: {},
                     legend: {
-                        data:soft_name
+                        data: ['应用下载TOP5（' + soft_date_arr[0] + '）', '应用下载TOP5（' + soft_date_arr[1] + '）']
                     },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
+                    radar: {
+                        // shape: 'circle',
+                        indicator: [
+                           { name: 'No.1（' + soft_name[0] + '）', min:3000000, max: 5000000},
+                           { name: 'No.2（' + soft_name[1] + '）', min:14000000, max: 15000000},
+                           { name: 'No.3（' + soft_name[2] + '）', min:14000000, max: 16000000},
+                           { name: 'No.4（' + soft_name[3] + '）', min:650000, max: 750000},
+                           { name: 'No.5（' + soft_name[4] + '）', min:1800000, max: 2100000}
+                        ]
                     },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            boundaryGap : false,
-                            data : soft_date_arr
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value',
-                            minInterval: 1
-                        }
-                    ],
-                    series : [
-                        {
-                            name:soft_name[4],
-                            type:'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[4]
-                        },
-                        {
-                            name:soft_name[3],
-                            type:'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[3]
-                        },
-                        {
-                            name:soft_name[2],
-                            type:'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[2]
-                        },
-                        {
-                            name:soft_name[1],
-                            type:'line',
-                            stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:soft_name[1]
-                        },
-                        {
-                            name:soft_name[0],
-                            type:'line',
-                            stack: '总量',
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'top'
-                                }
+                    series: [{
+                        name: '应用 vs 游戏（SOFT vs GAME）',
+                        type: 'radar',
+                        // areaStyle: {normal: {}},
+                        data : [
+                            {
+                                value : [soft_install_arr[0][1] - soft_install_arr[0][0],
+                                    soft_install_arr[1][1] - soft_install_arr[1][0],
+                                    soft_install_arr[2][1] - soft_install_arr[2][0],
+                                    soft_install_arr[3][1] - soft_install_arr[3][0],
+                                    soft_install_arr[4][1] - soft_install_arr[4][0]],
+                                name : '应用下载TOP5（' + soft_date_arr[0] + '）'
                             },
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[0]
-                        }
-                    ]
+                             {
+                                value : [soft_install_arr[0][2] - soft_install_arr[0][1],
+                                    soft_install_arr[1][2] - soft_install_arr[1][1],
+                                    soft_install_arr[2][2] - soft_install_arr[2][1],
+                                    soft_install_arr[3][2] - soft_install_arr[3][1],
+                                    soft_install_arr[4][2] - soft_install_arr[4][1]],
+                                name : '应用下载TOP5（' + soft_date_arr[1] + '）'
+                            }]
+                    }]
                 };
+
                 softChart.setOption(soft_option);
 
                 var game_option = {
@@ -255,42 +219,44 @@
                     ],
                     yAxis : [
                         {
-                            type : 'value'
+                            type : 'value',
+                            min:200000000,
+                            max:1200000000
                         }
                     ],
                     series : [
                         {
                             name:game_name[4],
                             type:'line',
-                            stack: '总量',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[4]
                         },
                         {
                             name:game_name[3],
                             type:'line',
-                            stack: '总量',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[3]
                         },
                         {
                             name:game_name[2],
                             type:'line',
-                            stack: '总量',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[2]
                         },
                         {
                             name:game_name[1],
                             type:'line',
-                            stack: '总量',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[1]
                         },
                         {
                             name:game_name[0],
                             type:'line',
-                            stack: '总量',
+                            // stack: '总量',
                             label: {
                                 normal: {
                                     show: true,

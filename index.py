@@ -179,23 +179,83 @@ def get_classify():
         logging.error(Exception, ":", e)
 
 
-@app.route("/softtop5")
+@app.route("/softgametop")
+def softgame():
+    return render_template("top5detail.html")
+
+
+@app.route("/top5")
 def getsoft_top5():
     conn = pymysql.connect(host=SDB_HOST, user=SDB_USER, password=SDB_PWD, db=SDB_DB, charset=SDB_CHARSET)
     cur = conn.cursor()
     # soft top 5
-    cur.execute("SELECT t0.a_pkgname, t0.a_name, date(t0.a_getdate) a_getdate, t0.a_install_sum FROM t_apps_addi_united t0 "
+    cur.execute("SELECT t0.a_pkgname, t0.a_name, date(t0.a_getdate) a_getdate, t0.a_install_sum "
+                "FROM t_apps_addi_united t0 "
                 "JOIN (SELECT t.a_pkgname FROM t_apps_addi_united t WHERE t.a_softgame = 'soft' AND "
                 "DATE(t.a_getdate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY t.a_install_sum DESC LIMIT 5) t1 ON "
-                "t0.a_pkgname = t1.a_pkgname WHERE DATE(t0.a_getdate) BETWEEN '2016-08-18' AND '2016-08-22';", YESTERDAY)
-    soft_top5 =
+                "t0.a_pkgname = t1.a_pkgname WHERE DATE(t0.a_getdate) "
+                "BETWEEN DATE_SUB(LOCALTIME,INTERVAL 7 DAY) AND DATE_SUB(LOCALTIME,INTERVAL 1 DAY);")
+    soft_top5 = cur.fetchall()
+    soft_dic = {}
+    date_install_list = []
+    soft_install_disc = {}
+    soft_install_list = []
+    cur_soft = soft_top5[0]
+    soft_dic[cur_soft[2].strftime('%Y-%m-%d')] = cur_soft[3]
+    date_install_list.append(soft_dic)
+
+    for soft in soft_top5[1:]:
+        soft_dic = {}
+        soft_install_disc = {}
+        if cur_soft[0] == soft[0]:
+            soft_dic[soft[2].strftime('%Y-%m-%d')] = soft[3]
+            date_install_list.append(soft_dic)
+        else:
+            soft_install_disc[cur_soft[1]] = date_install_list
+            soft_install_list.append(soft_install_disc)
+            cur_soft = soft
+            date_install_list = []
+            soft_dic[cur_soft[2].strftime('%Y-%m-%d')] = cur_soft[3]
+            date_install_list.append(soft_dic)
+    soft_install_disc[cur_soft[1]] = date_install_list
+    soft_install_list.append(soft_install_disc)
+    print(soft_install_list)
 
     # game top 5
-    cur.execute("SELECT t0.a_pkgname, t0.a_name, date(t0.a_getdate) a_getdate, t0.a_install_sum FROM t_apps_addi_united t0 "
+    cur.execute("SELECT t0.a_pkgname, t0.a_name, date(t0.a_getdate) a_getdate, t0.a_install_sum "
+                "FROM t_apps_addi_united t0 "
                 "JOIN (SELECT t.a_pkgname FROM t_apps_addi_united t WHERE t.a_softgame = 'game' AND "
                 "DATE(t.a_getdate) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY t.a_install_sum DESC LIMIT 5) t1 ON "
-                "t0.a_pkgname = t1.a_pkgname WHERE DATE(t0.a_getdate) BETWEEN '2016-08-18' AND '2016-08-22';", YESTERDAY)
+                "t0.a_pkgname = t1.a_pkgname WHERE DATE(t0.a_getdate) "
+                "BETWEEN DATE_SUB(LOCALTIME,INTERVAL 7 DAY) AND DATE_SUB(LOCALTIME,INTERVAL 1 DAY);")
+    game_top5 = cur.fetchall()
+    game_dic = {}
+    date_install_list = []
+    game_install_disc = {}
+    game_install_list = []
+    cur_game = game_top5[0]
+    game_dic[cur_game[2].strftime('%Y-%m-%d')] = cur_game[3]
+    date_install_list.append(game_dic)
 
+    for game in game_top5[1:]:
+        game_dic = {}
+        game_install_disc = {}
+        if cur_game[0] == game[0]:
+            game_dic[game[2].strftime('%Y-%m-%d')] = game[3]
+            date_install_list.append(game_dic)
+        else:
+            game_install_disc[cur_game[1]] = date_install_list
+            game_install_list.append(game_install_disc)
+            cur_game = game
+            date_install_list = []
+            game_dic[cur_game[2].strftime('%Y-%m-%d')] = cur_game[3]
+            date_install_list.append(game_dic)
+    game_install_disc[cur_game[1]] = date_install_list
+    game_install_list.append(game_install_disc)
+    print(game_install_list)
+
+    return jsonify({"softtop": soft_install_list,
+                    "gametop": game_install_list})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
