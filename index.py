@@ -1,11 +1,9 @@
 # _*_ coding: utf-8 _*_
 
 
-import os
-import time
+import datetime
 import logging
 import pymysql
-import shutil
 import urllib.request
 from flask import Flask, render_template
 from flask import request, jsonify
@@ -21,7 +19,7 @@ SDB_USER = "dba_apps"
 SDB_PWD = "mimadba_apps"
 SDB_CHARSET = "utf8"
 
-YESTERDAY = time.strftime('%Y-%m-%d', time.localtime(time.time() - 24*60*60))
+YESTERDAY = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 # ----local----
 # DB_HOST = "127.0.0.1"
@@ -180,8 +178,13 @@ def get_classify():
 
 
 @app.route("/softgametop")
-def softgame():
+def softgametop():
     return render_template("top5detail.html")
+
+
+@app.route("/softgame")
+def softgame():
+    return render_template("appdetail.html")
 
 
 @app.route("/top5")
@@ -256,6 +259,95 @@ def getsoft_top5():
 
     return jsonify({"softtop": soft_install_list,
                     "gametop": game_install_list})
+
+
+@app.route("/appspeed", methods=["GET", "POST"])
+def speed_of_days():
+    """
+    search app install_sum speed for three days top5
+    :return:
+    """
+    if request.method == "GET":
+        today = datetime.date.today().strftime('%Y-%m-%d')
+        yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        day_before_yes = (datetime.date.today() - datetime.timedelta(days=2)).strftime('%Y-%m-%d')
+        conn = pymysql.connect(host=SDB_HOST, db=SDB_DB, user=SDB_USER, passwd=SDB_PWD, charset=SDB_CHARSET)
+        cur = conn.cursor()
+        speed_sql = "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT DATE(t0.a_getdate) a_getdate, t0.a_pkgname a_pkgname, " \
+                    "t0.a_name a_name, t0.a_softgame a_softgame, t0.a_install_sum - t1.a_install_sum speed, " \
+                    "t0.a_install_sum a_install_sum " \
+                    "FROM t_apps_addi_united t0 JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname WHERE " \
+                    "DATE(t1.a_getdate) = DATE_SUB(DATE(t0.a_getdate), INTERVAL 1 DAY) AND " \
+                    "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s " \
+                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5) t2 " \
+                    "UNION ALL " \
+                    "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT DATE(t0.a_getdate) a_getdate, t0.a_pkgname a_pkgname, t0.a_name a_name, " \
+                    "t0.a_softgame a_softgame, t0.a_install_sum - t1.a_install_sum speed, t0.a_install_sum a_install_sum " \
+                    "FROM t_apps_addi_united t0 " \
+                    "JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname " \
+                    "WHERE DATE(t1.a_getdate) = DATE_SUB(DATE(t0.a_getdate),INTERVAL 1 DAY) AND " \
+                    "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s " \
+                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5) t3 " \
+                    "UNION ALL " \
+                    "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
+                    "(SELECT DATE(t0.a_getdate) a_getdate, t0.a_pkgname a_pkgname, t0.a_name a_name, " \
+                    "t0.a_softgame a_softgame, t0.a_install_sum - t1.a_install_sum speed, t0.a_install_sum a_install_sum " \
+                    "FROM t_apps_addi_united t0 " \
+                    "JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname WHERE " \
+                    "DATE(t1.a_getdate) = DATE_SUB( DATE(t0.a_getdate), INTERVAL 1 DAY) AND " \
+                    "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s GROUP BY DATE(t0.a_getdate), " \
+                    "t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5 ) t4"
+        cur.execute(speed_sql, (str(today), "soft", str(yesterday), "soft", str(day_before_yes), "soft"))
+        soft_speed = cur.fetchall()
+        samedate_soft_list = []
+        soft_list = []
+        cur_soft = soft_speed[0]
+        i_cur_soft = [cur_soft[4], cur_soft[4]/cur_soft[5], cur_soft[5], cur_soft[2], str(cur_soft[0])]
+        logging.debug("to string :%s", i_cur_soft)
+        samedate_soft_list.append(i_cur_soft)
+        for soft in soft_speed[1:]:
+            i_soft = [soft[4], soft[4]/soft[5], soft[5], soft[2], str(soft[0])]
+            if i_cur_soft[4] == i_soft[4]:
+                samedate_soft_list.append(i_soft)
+                i_cur_soft = i_soft
+            else:
+                soft_list.append(samedate_soft_list)
+                samedate_soft_list = []
+                i_cur_soft = i_soft
+                samedate_soft_list.append(i_cur_soft)
+        soft_list.append(samedate_soft_list)
+
+        cur.execute(speed_sql, (today, "game", yesterday, "game", day_before_yes, "game"))
+        game_speed = cur.fetchall()
+        samedate_game_list = []
+        game_list = []
+        cur_game = game_speed[0]
+        i_cur_game = [cur_game[4], cur_game[4]/cur_game[5], cur_game[5], cur_game[2], str(cur_game[0])]
+        samedate_game_list.append(i_cur_game)
+        for game in game_speed[1:]:
+            i_game = [game[4], game[4]/game[5], game[5], game[2], str(game[0])]
+            if i_cur_game[4] == i_game[4]:
+                samedate_game_list.append(game)
+                i_cur_game = i_game
+            else:
+                game_list.append(samedate_game_list)
+                samedate_game_list = []
+                i_cur_game = i_game
+                samedate_game_list.append(i_cur_game)
+        game_list.append(samedate_game_list)
+
+        logging.debug("soft_list: %s", soft_list)
+        logging.debug("game_list: %s", game_list)
+        return jsonify({"softdata": soft_list})
+    else:
+        logging.error("Request method is wrong")
+        return jsonify({"status": "failed"})
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

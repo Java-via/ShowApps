@@ -85,7 +85,7 @@
 
     window.onload = function() {
         $.ajax({
-            url: "/top5", //请求的url地址
+            url: "/appspeed", //请求的url地址
             dataType: "json", //返回格式为json
             // async : true, //请求是否异步，默认为异步，这也是ajax重要特性
             // data: data,    //参数值
@@ -97,131 +97,104 @@
             success: function (data) {
                 //请求成功时处理
                 console.log(data);
-                var soft_top = data["softtop"];
-                var game_top = data["gametop"];
-                var soft_name = [];
-                var game_name = [];
-                var soft_date_arr = [];
-                var game_date_arr = [];
-                var soft_install_arr = [];
-                var game_install_arr = [];
-
-                for(var i=0; i<soft_top.length; i++) {
-                    soft_date_arr = [];
-                    for(var name in soft_top[i]) {
-                        soft_name.push(name);
-                        var soft_date_install = [];
-                        soft_date_arr = [];
-                        var soft = soft_top[i][name];
-                        for(var j=0; j<soft.length; j++) {
-                            for(var date in soft[j]) {
-                                soft_date_arr.push(date);
-                                soft_date_install.push(soft[j][date]);
-                            }
-                        }
-                        soft_install_arr.push(soft_date_install);
-                    }
-                }
-                console.log(soft_name);
-                console.log(soft_date_arr);
-                console.log(soft_install_arr);
-
-                for(var k=0; k<game_top.length; k++) {
-                    game_date_arr = [];
-                    for(var g_name in game_top[k]) {
-                        game_name.push(g_name);
-                        var game_date_install = [];
-                        game_date_arr = [];
-                        var game = game_top[k][g_name];
-                        for(var l=0; l<game.length; l++) {
-                            for(var g_date in game[l]) {
-                                game_date_arr.push(g_date);
-                                game_date_install.push(game[l][g_date]);
-                            }
-                        }
-                        game_install_arr.push(game_date_install);
-                    }
-                }
-                console.log(game_name);
-                console.log(game_date_arr);
-                console.log(game_install_arr);
 
                 var softChart = echarts.init($("#chart_soft").get(0));
                 var gameChart = echarts.init($("#chart_game").get(0));
+
+                var data = data.softdata;
                 var soft_option = {
+                    backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
+                        offset: 0,
+                        color: '#f7f8fa'
+                    }, {
+                        offset: 1,
+                        color: '#cdd0d5'
+                    }]),
                     title: {
-                        text: '应用下载TOP5'
-                    },
-                    tooltip : {
-                        trigger: 'axis'
+                        text: '每日下载增速TOP5与下载量'
                     },
                     legend: {
-                        data:soft_name
+                        right: 10,
+                        data: ['2016-08-24', '2016-08-25', '2016-08-26']
                     },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
+                    xAxis: {
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
                         }
                     },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
+                    yAxis: {
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        },
+                        scale: true
                     },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            boundaryGap : false,
-                            data : soft_date_arr
+                    series: [{
+                        name: '1990',
+                        data: data[0],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 5e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(120, 36, 50, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(251, 118, 123)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(204, 46, 72)'
+                                }])
+                            }
                         }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value',
-                            min:2000000000,
-                            max:9000000000
+                    }, {
+                        name: '2015',
+                        data: data[1],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 5e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(25, 100, 150, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(129, 227, 238)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(25, 183, 207)'
+                                }])
+                            }
                         }
-                    ],
-                    series : [
-                        {
-                            name:soft_name[4],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[4]
-                        },
-                        {
-                            name:soft_name[3],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[3]
-                        },
-                        {
-                            name:soft_name[2],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[2]
-                        },
-                        {
-                            name:soft_name[1],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[1]
-                        },
-                        {
-                            name:soft_name[0],
-                            type:'line',
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'top'
-                                }
-                            },
-                            areaStyle: {normal: {}},
-                            data:soft_install_arr[0]
-                        }
-                    ]
+                    }]
                 };
+
                 softChart.setOption(soft_option);
 
                 var game_option = {
@@ -263,30 +236,35 @@
                         {
                             name:game_name[4],
                             type:'line',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[4]
                         },
                         {
                             name:game_name[3],
                             type:'line',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[3]
                         },
                         {
                             name:game_name[2],
                             type:'line',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[2]
                         },
                         {
                             name:game_name[1],
                             type:'line',
+                            // stack: '总量',
                             areaStyle: {normal: {}},
                             data:game_install_arr[1]
                         },
                         {
                             name:game_name[0],
                             type:'line',
+                            // stack: '总量',
                             label: {
                                 normal: {
                                     show: true,
@@ -313,4 +291,5 @@
     }
 </script>
 
-</body></html>
+</body>
+</html>
