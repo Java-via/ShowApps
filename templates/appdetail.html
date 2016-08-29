@@ -22,6 +22,8 @@
     <script src="../static/js/echarts.js"></script>
 </head>
 
+<!-- 折线图显示七天下载增量 -->
+
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -146,8 +148,8 @@
                 console.log(game_date_arr);
                 console.log(game_install_arr);
 
-                var softChart = echarts.init($("#chart_soft").get(0));
-                var gameChart = echarts.init($("#chart_game").get(0));
+                var softChart = echarts.init($("#chart_soft").get(0), "");
+                var gameChart = echarts.init($("#chart_game").get(0), "");
                 var soft_option = {
                     title: {
                         text: '应用下载TOP5'

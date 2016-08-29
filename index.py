@@ -8,6 +8,7 @@ import urllib.request
 from flask import Flask, render_template
 from flask import request, jsonify
 from tag_config.app_tags import *
+import util
 
 logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
@@ -37,36 +38,73 @@ YESTERDAY = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m
 
 @app.route('/')
 def all():
+    """
+    turn to index page
+    :return:
+    """
     return render_template('all_data.html')
+
+
+@app.route("/softgametop")
+def softgametop():
+    """
+    turn to top 5 radar chart
+    :return:
+    """
+    return render_template("top5detail.html")
+
+
+@app.route("/softgame")
+def softgame():
+    """
+    turn to app top5 7days line chart
+    :return:
+    """
+    return render_template("appdetail.html")
+
+
+@app.route("/everydaytop5")
+def everyday():
+    """
+    to turn to everyday_top10 scatter
+    :return:
+    """
+    return render_template("everyday_top10.html")
+
+
+@app.route("/test")
+def test():
+    """
+    to test charts
+    :return:
+    """
+    return render_template("test.html")
 
 
 @app.route('/register', methods=["POST", "GET"])
 def register():
+    """
+    user register
+    :return:
+    """
     useremail = request.form.get("userEmail", "")
     username = request.form.get("userName", "")
     userpwd = request.form.get("userPwd", "")
-    useradd(useremail, username, userpwd)
     logging.debug(useremail, username, userpwd)
-    return jsonify({"msg": "success"})
-
-
-def useradd(useremail, username, userpwd):
-    try:
-        conn = pymysql.connect(host="localhost", user="root", password="123", db="my_db", charset="utf8")
-        cur = conn.cursor()
-        cur.execute("INSERT INTO users (userEmail, userName, userPwd) VALUES (%s, %s, %s)",
-                    (useremail, username, userpwd))
-        conn.commit()
-    except Exception as e:
-        logging.error(Exception, ":", e)
-    return
+    if util.useradd(useremail, username, userpwd) == "suc":
+        return jsonify({"msg": "success"})
+    else:
+        return jsonify({"msg": "fail"})
 
 
 @app.route('/classify', methods=["POST", "GET"])
 def get_classify():
+    """
+    show index page, top10 of soft, game, and speed
+    :return:
+    """
     try:
-        conn = pymysql.connect(host=SDB_HOST, user=SDB_USER, password=SDB_PWD, db=SDB_DB, charset=SDB_CHARSET)
-        cur = conn.cursor()
+        conn, cur = util.condb()
 
         # yesterday soft TOP10
         cur.execute("SELECT a_pkgname, a_name, a_picurl, a_install_sum FROM t_apps_addi_united "
@@ -85,7 +123,7 @@ def get_classify():
         # save pic of topsoft
         i = 0
         for soft in top_soft:
-            logging.debug("Game is %s", soft)
+            logging.debug("Soft is %s", soft)
             url = str(soft[2])
             path = "F:/pythonworkspace/flasktest/static/pic/topsoft" + str(i) + ".jpg"
             logging.debug("path is %s", path)
@@ -177,20 +215,35 @@ def get_classify():
         logging.error(Exception, ":", e)
 
 
-@app.route("/softgametop")
-def softgametop():
-    return render_template("top5detail.html")
-
-
-@app.route("/softgame")
-def softgame():
-    return render_template("appdetail.html")
+@app.route("/searchapp", methods=["GET", "POST"])
+def search_app():
+    if request.method == "GET":
+        app_name = request.args.get("app_name")
+        logging.debug("App_name is : %s", app_name)
+        conn, cur = util.condb()
+        cur.execute("SELECT a_picurl, a_picurl, a_classify, a_description, a_url_list "
+                    "FROM t_apps_basic_united WHERE a_name = %s ORDER BY a_getdate DESC LIMIT 1;", app_name)
+        aim_app = cur.fetchall()
+        logging.debug("Exact Match! Search result is %s", aim_app)
+        if len(aim_app) > 0:
+            return jsonify({"apps": aim_app})
+        else:
+            cur.execute("SELECT a_picurl, a_picurl, a_classify, a_description, a_url_list "
+                        "FROM t_apps_basic_united WHERE a_name like %s ORDER BY a_getdate DESC;", ("%" + app_name + "%"))
+            aim_apps = cur.fetchall()
+            logging.debug("Fuzzy Match! Search result is %s", aim_apps)
+            return jsonify({"apps": aim_apps})
+    else:
+        return jsonify({"msg": "wrong request method"})
 
 
 @app.route("/top5")
-def getsoft_top5():
-    conn = pymysql.connect(host=SDB_HOST, user=SDB_USER, password=SDB_PWD, db=SDB_DB, charset=SDB_CHARSET)
-    cur = conn.cursor()
+def get_soft_top5():
+    """
+    for line chart and radar
+    :return:
+    """
+    conn, cur = util.condb()
     # soft top 5
     cur.execute("SELECT t0.a_pkgname, t0.a_name, date(t0.a_getdate) a_getdate, t0.a_install_sum "
                 "FROM t_apps_addi_united t0 "
@@ -264,15 +317,14 @@ def getsoft_top5():
 @app.route("/appspeed", methods=["GET", "POST"])
 def speed_of_days():
     """
-    search app install_sum speed for three days top5
+    search app install_sum speed for three days top10 for scatter
     :return:
     """
     if request.method == "GET":
-        today = datetime.date.today().strftime('%Y-%m-%d')
         yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         day_before_yes = (datetime.date.today() - datetime.timedelta(days=2)).strftime('%Y-%m-%d')
-        conn = pymysql.connect(host=SDB_HOST, db=SDB_DB, user=SDB_USER, passwd=SDB_PWD, charset=SDB_CHARSET)
-        cur = conn.cursor()
+        twodays_before = (datetime.date.today() - datetime.timedelta(days=3)).strftime('%Y-%m-%d')
+        conn, cur = util.condb()
         speed_sql = "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
                     "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
                     "(SELECT DATE(t0.a_getdate) a_getdate, t0.a_pkgname a_pkgname, " \
@@ -281,7 +333,7 @@ def speed_of_days():
                     "FROM t_apps_addi_united t0 JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname WHERE " \
                     "DATE(t1.a_getdate) = DATE_SUB(DATE(t0.a_getdate), INTERVAL 1 DAY) AND " \
                     "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s " \
-                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5) t2 " \
+                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 10) t2 " \
                     "UNION ALL " \
                     "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
                     "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
@@ -291,7 +343,7 @@ def speed_of_days():
                     "JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname " \
                     "WHERE DATE(t1.a_getdate) = DATE_SUB(DATE(t0.a_getdate),INTERVAL 1 DAY) AND " \
                     "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s " \
-                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5) t3 " \
+                    "GROUP BY DATE(t0.a_getdate), t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 10) t3 " \
                     "UNION ALL " \
                     "SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
                     "(SELECT a_getdate, a_pkgname, a_name, a_softgame, speed, a_install_sum FROM " \
@@ -301,8 +353,9 @@ def speed_of_days():
                     "JOIN t_apps_addi_united t1 ON t0.a_pkgname = t1.a_pkgname WHERE " \
                     "DATE(t1.a_getdate) = DATE_SUB( DATE(t0.a_getdate), INTERVAL 1 DAY) AND " \
                     "DATE(t0.a_getdate) = %s AND t0.a_softgame = %s GROUP BY DATE(t0.a_getdate), " \
-                    "t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 5 ) t4"
-        cur.execute(speed_sql, (str(today), "soft", str(yesterday), "soft", str(day_before_yes), "soft"))
+                    "t0.a_install_sum - t1.a_install_sum ORDER BY speed DESC) t LIMIT 10 ) t4"
+
+        cur.execute(speed_sql, (str(yesterday), "soft", str(day_before_yes), "soft", str(twodays_before), "soft"))
         soft_speed = cur.fetchall()
         samedate_soft_list = []
         soft_list = []
@@ -322,7 +375,7 @@ def speed_of_days():
                 samedate_soft_list.append(i_cur_soft)
         soft_list.append(samedate_soft_list)
 
-        cur.execute(speed_sql, (today, "game", yesterday, "game", day_before_yes, "game"))
+        cur.execute(speed_sql, (str(yesterday), "game", str(day_before_yes), "game", str(twodays_before), "game"))
         game_speed = cur.fetchall()
         samedate_game_list = []
         game_list = []
@@ -332,7 +385,7 @@ def speed_of_days():
         for game in game_speed[1:]:
             i_game = [game[4], game[4]/game[5], game[5], game[2], str(game[0])]
             if i_cur_game[4] == i_game[4]:
-                samedate_game_list.append(game)
+                samedate_game_list.append(i_game)
                 i_cur_game = i_game
             else:
                 game_list.append(samedate_game_list)
@@ -343,7 +396,7 @@ def speed_of_days():
 
         logging.debug("soft_list: %s", soft_list)
         logging.debug("game_list: %s", game_list)
-        return jsonify({"softdata": soft_list})
+        return jsonify({"softdata": soft_list, "gamedata": game_list})
     else:
         logging.error("Request method is wrong")
         return jsonify({"status": "failed"})

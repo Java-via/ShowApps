@@ -22,6 +22,8 @@
     <script src="../static/js/echarts.js"></script>
 </head>
 
+<!-- 三天下载增量前10散点图 -->
+
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -79,10 +81,11 @@
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
 <!-- 引入 vintage 主题 -->
-<script src="../static/js/theme/macarons.js"></script>
+<script src="../static/js/theme/shine.js"></script>
 
 <script defer="defer" type="text/javascript">
-
+    var softChart = echarts.init($("#chart_soft").get(0), "shine");
+    var gameChart = echarts.init($("#chart_game").get(0), "shine");
     window.onload = function() {
         $.ajax({
             url: "/appspeed", //请求的url地址
@@ -98,24 +101,24 @@
                 //请求成功时处理
                 console.log(data);
 
-                var softChart = echarts.init($("#chart_soft").get(0));
-                var gameChart = echarts.init($("#chart_game").get(0));
-
-                var data = data.softdata;
+                var soft_data =  data.softdata;
+                var game_data = data.gamedata;
+                console.log(soft_data);
+                console.log(game_data);
                 var soft_option = {
                     backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
                         offset: 0,
                         color: '#f7f8fa'
                     }, {
                         offset: 1,
-                        color: '#cdd0d5'
+                        color: '#ffffff'
                     }]),
                     title: {
                         text: '每日下载增速TOP5与下载量'
                     },
                     legend: {
                         right: 10,
-                        data: ['2016-08-24', '2016-08-25', '2016-08-26']
+                        data: [soft_data[0][0][4], soft_data[1][0][4], soft_data[2][0][4]]
                     },
                     xAxis: {
                         splitLine: {
@@ -133,16 +136,17 @@
                         scale: true
                     },
                     series: [{
-                        name: '1990',
-                        data: data[0],
+                        name: soft_data[0][0][4],
+                        data: soft_data[0],
                         type: 'scatter',
                         symbolSize: function (data) {
-                            return Math.sqrt(data[2]) / 5e2;
+                            return Math.sqrt(data[2]) / 8e2;
                         },
                         label: {
                             emphasis: {
                                 show: true,
                                 formatter: function (param) {
+                                    console.log(param.data[3]);
                                     return param.data[3];
                                 },
                                 position: 'top'
@@ -163,11 +167,167 @@
                             }
                         }
                     }, {
-                        name: '2015',
-                        data: data[1],
+                        name: soft_data[1][0][4],
+                        data: soft_data[1],
                         type: 'scatter',
                         symbolSize: function (data) {
-                            return Math.sqrt(data[2]) / 5e2;
+                            return Math.sqrt(data[2]) / 8e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    console.log(param.data[3]);
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(120, 36, 50, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(144, 238, 144)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(60, 179, 113)'
+                                }])
+                            }
+                        }
+                    }, {
+                        name: soft_data[2][0][4],
+                        data: soft_data[2],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 8e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(25, 100, 150, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(129, 227, 238)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(25, 183, 207)'
+                                }])
+                            }
+                        }
+                    }]
+                };
+
+                var game_option = {
+                    backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
+                        offset: 0,
+                        color: '#f7f8fa'
+                    }, {
+                        offset: 1,
+                        color: '#ffffff'
+                    }]),
+                    title: {
+                        text: '每日下载增速TOP5与下载量'
+                    },
+                    legend: {
+                        right: 10,
+                        data: [game_data[0][0][4], game_data[1][0][4], game_data[2][0][4]]
+                    },
+                    xAxis: {
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        }
+                    },
+                    yAxis: {
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        },
+                        scale: true
+                    },
+                    series: [{
+                        name: game_data[0][0][4],
+                        data: game_data[0],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 2e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    console.log(param.data[3]);
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(120, 36, 50, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(251, 118, 123)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(204, 46, 72)'
+                                }])
+                            }
+                        }
+                    }, {
+                        name: game_data[1][0][4],
+                        data: game_data[1],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 2e2;
+                        },
+                        label: {
+                            emphasis: {
+                                show: true,
+                                formatter: function (param) {
+                                    console.log(param.data[3]);
+                                    return param.data[3];
+                                },
+                                position: 'top'
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(120, 36, 50, 0.5)',
+                                shadowOffsetY: 5,
+                                color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                    offset: 0,
+                                    color: 'rgb(144, 238, 144)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgb(60, 179, 113)'
+                                }])
+                            }
+                        }
+                    }, {
+                        name: game_data[2][0][4],
+                        data: game_data[2],
+                        type: 'scatter',
+                        symbolSize: function (data) {
+                            return Math.sqrt(data[2]) / 2e2;
                         },
                         label: {
                             emphasis: {
@@ -196,86 +356,6 @@
                 };
 
                 softChart.setOption(soft_option);
-
-                var game_option = {
-                    title: {
-                        text: '游戏下载TOP5'
-                    },
-                    tooltip : {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data:game_name
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            boundaryGap : false,
-                            data : game_date_arr
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value',
-                            min:200000000,
-                            max:1200000000
-                        }
-                    ],
-                    series : [
-                        {
-                            name:game_name[4],
-                            type:'line',
-                            // stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:game_install_arr[4]
-                        },
-                        {
-                            name:game_name[3],
-                            type:'line',
-                            // stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:game_install_arr[3]
-                        },
-                        {
-                            name:game_name[2],
-                            type:'line',
-                            // stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:game_install_arr[2]
-                        },
-                        {
-                            name:game_name[1],
-                            type:'line',
-                            // stack: '总量',
-                            areaStyle: {normal: {}},
-                            data:game_install_arr[1]
-                        },
-                        {
-                            name:game_name[0],
-                            type:'line',
-                            // stack: '总量',
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'top'
-                                }
-                            },
-                            areaStyle: {normal: {}},
-                            data:game_install_arr[0]
-                        }
-                    ]
-                };
                 gameChart.setOption(game_option);
             },
 
