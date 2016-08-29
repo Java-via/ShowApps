@@ -1,43 +1,46 @@
 # _*_ coding: utf-8 _*_
-import sys
 import pymysql
+import util
 
-conn = pymysql.connect(host="127.0.0.1", user="root", passwd="123", db="my_db", charset="utf8")
-curs = conn.cursor()
+conn, cur = util.condb()
+cur.execute("SELECT DISTINCT a_pkgname FROM t_apps_basic_united")
 
+pkgname_set = set(item[0] for item in cur.fetchall())
+print(pkgname_set)
 
-def delete_func(tablename, **kwargs):
-    sql_str = "delete from %s " % tablename
-    if "appid" in kwargs and "ds" in kwargs:
-        sql_str += "where appid in ('%s') and ds='%s'" % (kwargs["appid"], kwargs["ds"])
-        print(sql_str)
-    elif "appid" in kwargs:
-        sql_str += "where appid in ('%s')" % (kwargs["appid"])
-        print(sql_str)
-    elif "ds" in kwargs:
-        sql_str += "where ds='%s'" % kwargs["ds"]
-        print(sql_str)
+old_new_list = {}
+
+f = open("G:/tmp/tmp.csv", "r", encoding="utf-8")
+ff = open("G:/tmp/tmp1", "a", encoding="utf-8")
+for line in f.readlines():
+    item_old_new = []
+    old = []
+    new = []
+    deviceid = ""
+    if '"' in line:
+        res = line.split('"')
+        deviceid = res[0]
+        print("DEV:" + deviceid)
+        ff.write(deviceid + "\t")
+        old = res[1]
+        ff.write(res[1] + "\t")
+        print("OLD" + res[1])
+        pkgname = res[1].split(",")
+        for pkg in pkgname:
+            if pkg in pkgname_set:
+                ff.write(pkg + ",")
+                print("IN" + pkg)
+        ff.write("\n")
     else:
-        print(sql_str)
-        pass
-    return sql_str
+        res = line.split(",")
+        deviceid = res[0]
+        ff.write(deviceid + "\t")
+        if res[1] in pkgname_set:
+            print("IN" + res[1])
+            old = res[1]
+            new = res[1]
+            old = res[1]
+            ff.write(new + "\t")
+        else:
+            ff.write(deviceid + "\n")
 
-if len(sys.argv) == 2:
-    delete_func(sys.argv[1])
-    print(1)
-elif len(sys.argv) == 3:
-    strin = sys.argv[2].split("=")
-    if strin[0] == "appid":
-        delete_func(sys.argv[1], appid=strin[1])
-    elif strin[0] == "ds":
-        delete_func(sys.argv[1], ds=strin[1])
-    else:
-        print("param error")
-    print(2)
-else:
-    strin_appid = sys.argv[2].split("=")
-    print(strin_appid)
-    strin_ds = sys.argv[3].split("=")
-    print(strin_ds)
-    count = curs.execute(delete_func(sys.argv[1], appid=strin_appid[1], ds=strin_ds[1]))
-conn.commit()

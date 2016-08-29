@@ -60,7 +60,7 @@ def softgame():
     turn to app top5 7days line chart
     :return:
     """
-    return render_template("appdetail.html")
+    return render_template("lineshow.html")
 
 
 @app.route("/everydaytop5")
@@ -221,20 +221,32 @@ def search_app():
         app_name = request.args.get("app_name")
         logging.debug("App_name is : %s", app_name)
         conn, cur = util.condb()
-        cur.execute("SELECT a_picurl, a_picurl, a_classify, a_description, a_url_list "
+        cur.execute("SELECT a_picurl, a_name, a_pkgname "
                     "FROM t_apps_basic_united WHERE a_name = %s ORDER BY a_getdate DESC LIMIT 1;", app_name)
         aim_app = cur.fetchall()
         logging.debug("Exact Match! Search result is %s", aim_app)
         if len(aim_app) > 0:
-            return jsonify({"apps": aim_app})
+            return jsonify({"msg": "exact match", "apps": aim_app})
         else:
-            cur.execute("SELECT a_picurl, a_picurl, a_classify, a_description, a_url_list "
+            cur.execute("SELECT a_picurl, a_name, a_pkgname "
                         "FROM t_apps_basic_united WHERE a_name like %s ORDER BY a_getdate DESC;", ("%" + app_name + "%"))
             aim_apps = cur.fetchall()
             logging.debug("Fuzzy Match! Search result is %s", aim_apps)
-            return jsonify({"apps": aim_apps})
+            return jsonify({"msg": "fuzzy match", "apps": aim_apps})
     else:
         return jsonify({"msg": "wrong request method"})
+
+
+@app.route("/appdetail", methods=["GET", "POST"])
+def show_app_detail():
+    pkgname = request.args.get("pkgname")
+    conn, cur = util.condb()
+    sql = "SELECT a_picurl, a_name, a_pkgname, a_url, a_classify, a_desc FROM t_apps_basic_unite " \
+          "WHERE a_pkgname = %s ORDER BY a_getdate DESC LIMIT 1"
+    cur.execute(sql, pkgname)
+    this_app = (item[0], item[1], item[2], item[3], item[4], item[5] for item in cur.fetchall())
+
+    return render_template("appdetail.html", this_app)
 
 
 @app.route("/top5")
