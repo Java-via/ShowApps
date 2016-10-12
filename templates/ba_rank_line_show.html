@@ -22,7 +22,7 @@
     <script src="../static/js/echarts.js"></script>
 </head>
 
-<!-- 雷达图显示近两天下载 -->
+<!-- 折线图显示七天下载增量 -->
 
 <body>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -34,17 +34,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#" style="font-size: 30px">应用信息查询</a>    <!-- 可在此设置回首页 -->
+            <a class="navbar-brand" href="/" style="font-size: 30px">应用信息查询</a>    <!-- 可在此设置回首页 -->
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">账号设置</a></li>
                 <li><a href="#">帮助信息</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="查询...">
-                <button type="button" class="btn btn-default">查询</button>
-            </form>
         </div>
     </div>
 </nav>
@@ -62,7 +58,10 @@
         </div>
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h2 id="app_name">应用名称</h2>
+            <h2 id="title_name" style="display: none">近七日下载情况</h2>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="loading">
+            数据载入，请稍候...
+            </div>
 
             <div id="chart_soft" style="width: 850px;height:500px;"></div>
             <h2></h2>
@@ -87,7 +86,7 @@
 
     window.onload = function() {
         $.ajax({
-            url: "/top5", //请求的url地址
+            url: "/all/speed/req", //请求的url地址
             dataType: "json", //返回格式为json
             // async : true, //请求是否异步，默认为异步，这也是ajax重要特性
             // data: data,    //参数值
@@ -97,109 +96,63 @@
             },
 
             success: function (data) {
+                $("#loading").hide();
+                $("#title_name").hide();
                 //请求成功时处理
-                console.log(data);
-                var soft_top = data["softtop"];
-                var game_top = data["gametop"];
-                var soft_name = [];
-                var game_name = [];
-                var soft_date_arr = [];
-                var game_date_arr = [];
-                var soft_install_arr = [];
-                var game_install_arr = [];
+                var soft_top5 = data["softtop5"];
+                var game_top5 = data["gametop5"];
+                var soft_name5 = [];
+                var game_name5 = [];
+                var soft_date_arr5 = [];
+                var game_date_arr5 = [];
+                var soft_speed_arr5 = [];
+                var game_speed_arr5 = [];
 
-                for(var i=0; i<soft_top.length; i++) {
-                    soft_date_arr = [];
-                    for(var name in soft_top[i]) {
-                        soft_name.push(name);
-                        var soft_date_install = [];
-                        soft_date_arr = [];
-                        var soft = soft_top[i][name];
+                for(var i=0; i<soft_top5.length; i++) {
+                    soft_date_arr5 = [];
+                    for(var name in soft_top5[i]) {
+                        soft_name5.push(name);
+                        var soft_date_speed5 = [];
+                        soft_date_arr5 = [];
+                        var soft = soft_top5[i][name];
                         for(var j=0; j<soft.length; j++) {
                             for(var date in soft[j]) {
-                                soft_date_arr.push(date);
-                                soft_date_install.push(soft[j][date]);
+                                soft_date_arr5.push(date);
+                                soft_date_speed5.push(soft[j][date]);
                             }
                         }
-                        soft_install_arr.push(soft_date_install);
+                        soft_speed_arr5.push(soft_date_speed5);
                     }
                 }
-                console.log(soft_name);
-                console.log(soft_date_arr);
-                console.log(soft_install_arr);
 
-                for(var k=0; k<game_top.length; k++) {
-                    game_date_arr = [];
-                    for(var g_name in game_top[k]) {
-                        game_name.push(g_name);
-                        var game_date_install = [];
-                        game_date_arr = [];
-                        var game = game_top[k][g_name];
+                for(var k=0; k<game_top5.length; k++) {
+                    game_date_arr5 = [];
+                    for(var g_name in game_top5[k]) {
+                        game_name5.push(g_name);
+                        var game_date_speed5 = [];
+                        game_date_arr5 = [];
+                        var game = game_top5[k][g_name];
                         for(var l=0; l<game.length; l++) {
                             for(var g_date in game[l]) {
-                                game_date_arr.push(g_date);
-                                game_date_install.push(game[l][g_date]);
+                                game_date_arr5.push(g_date);
+                                game_date_speed5.push(game[l][g_date]);
                             }
                         }
-                        game_install_arr.push(game_date_install);
+                        game_speed_arr5.push(game_date_speed5);
                     }
                 }
 
-                var softChart = echarts.init($("#chart_soft").get(0));
-                var gameChart = echarts.init($("#chart_game").get(0));
+                var softChart = echarts.init($("#chart_soft").get(0), "");
+                var gameChart = echarts.init($("#chart_game").get(0), "");
                 var soft_option = {
                     title: {
-                        text: '应用游戏TOP5'
-                    },
-                    tooltip: {},
-                    legend: {
-                        data: ['应用下载TOP5（' + soft_date_arr[0] + '）', '应用下载TOP5（' + soft_date_arr[1] + '）']
-                    },
-                    radar: {
-                        // shape: 'circle',
-                        indicator: [
-                           { name: 'No.1（' + soft_name[0] + '）', min:3000000, max: 5000000},
-                           { name: 'No.2（' + soft_name[1] + '）', min:14000000, max: 15000000},
-                           { name: 'No.3（' + soft_name[2] + '）', min:14000000, max: 16000000},
-                           { name: 'No.4（' + soft_name[3] + '）', min:650000, max: 750000},
-                           { name: 'No.5（' + soft_name[4] + '）', min:1800000, max: 2100000}
-                        ]
-                    },
-                    series: [{
-                        name: '应用 vs 游戏（SOFT vs GAME）',
-                        type: 'radar',
-                        // areaStyle: {normal: {}},
-                        data : [
-                            {
-                                value : [soft_install_arr[0][1] - soft_install_arr[0][0],
-                                    soft_install_arr[1][1] - soft_install_arr[1][0],
-                                    soft_install_arr[2][1] - soft_install_arr[2][0],
-                                    soft_install_arr[3][1] - soft_install_arr[3][0],
-                                    soft_install_arr[4][1] - soft_install_arr[4][0]],
-                                name : '应用下载TOP5（' + soft_date_arr[0] + '）'
-                            },
-                             {
-                                value : [soft_install_arr[0][2] - soft_install_arr[0][1],
-                                    soft_install_arr[1][2] - soft_install_arr[1][1],
-                                    soft_install_arr[2][2] - soft_install_arr[2][1],
-                                    soft_install_arr[3][2] - soft_install_arr[3][1],
-                                    soft_install_arr[4][2] - soft_install_arr[4][1]],
-                                name : '应用下载TOP5（' + soft_date_arr[1] + '）'
-                            }]
-                    }]
-                };
-
-                softChart.setOption(soft_option);
-
-                var game_option = {
-                    title: {
-                        text: '游戏下载TOP5'
+                        text: '应用增速TOP5'
                     },
                     tooltip : {
                         trigger: 'axis'
                     },
                     legend: {
-                        data:game_name
+                        data:soft_name5
                     },
                     toolbox: {
                         feature: {
@@ -216,49 +169,42 @@
                         {
                             type : 'category',
                             boundaryGap : false,
-                            data : game_date_arr
+                            data : soft_date_arr5
                         }
                     ],
                     yAxis : [
                         {
-                            type : 'value',
-                            min:200000000,
-                            max:1200000000
+                            type : 'value'
                         }
                     ],
                     series : [
                         {
-                            name:game_name[4],
+                            name:soft_name5[4],
                             type:'line',
-                            // stack: '总量',
                             areaStyle: {normal: {}},
-                            data:game_install_arr[4]
+                            data:soft_speed_arr5[4]
                         },
                         {
-                            name:game_name[3],
+                            name:soft_name5[3],
                             type:'line',
-                            // stack: '总量',
                             areaStyle: {normal: {}},
-                            data:game_install_arr[3]
+                            data:soft_speed_arr5[3]
                         },
                         {
-                            name:game_name[2],
+                            name:soft_name5[2],
                             type:'line',
-                            // stack: '总量',
                             areaStyle: {normal: {}},
-                            data:game_install_arr[2]
+                            data:soft_speed_arr5[2]
                         },
                         {
-                            name:game_name[1],
+                            name:soft_name5[1],
                             type:'line',
-                            // stack: '总量',
                             areaStyle: {normal: {}},
-                            data:game_install_arr[1]
+                            data:soft_speed_arr5[1]
                         },
                         {
-                            name:game_name[0],
+                            name:soft_name5[0],
                             type:'line',
-                            // stack: '总量',
                             label: {
                                 normal: {
                                     show: true,
@@ -266,7 +212,81 @@
                                 }
                             },
                             areaStyle: {normal: {}},
-                            data:game_install_arr[0]
+                            data:soft_speed_arr5[0]
+                        }
+                    ]
+                };
+                softChart.setOption(soft_option);
+
+                var game_option = {
+                    title: {
+                        text: '游戏增速TOP5-10'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:game_name5
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : game_date_arr5
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    series : [
+                        {
+                            name:game_name5[4],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:game_speed_arr5[4]
+                        },
+                        {
+                            name:game_name5[3],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:game_speed_arr5[3]
+                        },
+                        {
+                            name:game_name5[2],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:game_speed_arr5[2]
+                        },
+                        {
+                            name:game_name5[1],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:game_speed_arr5[1]
+                        },
+                        {
+                            name:game_name5[0],
+                            type:'line',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            areaStyle: {normal: {}},
+                            data:game_speed_arr5[0]
                         }
                     ]
                 };

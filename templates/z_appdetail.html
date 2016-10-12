@@ -19,7 +19,7 @@
     <link href="../static/css/dashboard.css" rel="stylesheet">
 
     <script src="../static/js/ie-emulation-modes-warning.js"></script>
-    <script src="../static/js/echarts.common.min.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
 </head>
 
 <body>
@@ -260,7 +260,7 @@
                             $("#search_show").show();
                             var tbody = "";
                             for(var i=0; i<aim_apps.length; i++) {
-                                var str_tur = "./appdetail?pkgname=" + aim_apps[i][2];
+{#                                var str_tur = "./appdetail?pkgname=" + aim_apps[i][2];#}
                                 tbody += "<tr><td>" + (i + 1) + "</td><td><img src='" + aim_apps[i][0] + "'"
                                         + " width=30 height=30>"
                                         + "&nbsp;&nbsp;" + aim_apps[i][1] + "</td><td href='" + str_tur +"'>" + "查看详情" + "</td></tr>";

@@ -53,7 +53,7 @@ contrApp.controller("loginCtr", [
 								} else {
 									setCookie('systemuserid', data.id, 1);
 								}
-								window.location.href = "/index.html";
+								window.location.href = "/a_index.html";
 							} else {
 								$scope.errorTxt = "用户名或密码错误";
 							}

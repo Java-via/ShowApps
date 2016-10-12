@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://v3.bootcss.com/examples/dashboard/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="/static/icon.jpg">
+
+    <title>应用数据统计</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/dashboard.css" rel="stylesheet">
+
+    <script src="/static/js/ie-emulation-modes-warning.js"></script>
+    <script src="/static/js/echarts.js"></script>
+</head>
+
+<!-- 折线图显示十天下载增量 -->
+
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" style="font-size: 30px">应用信息查询</a>    <!-- 可在此设置回首页 -->
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">账号设置</a></li>
+                <li><a href="#">帮助信息</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar" id="menu">
+            <ul class="nav nav-sidebar" id="soft_tags_list">
+                <li class="active"><a href="#" style="font-size: large; color: white">软件 <span class="sr-only">(current)</span></a></li>
+            </ul>
+
+            <ul class="nav nav-sidebar" id="game_tags_list">
+                <li class="active"><a href="#" style="font-size: large; color: white">游戏 <span class="sr-only"></span></a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h2 id="title_name" style="display: none">近十日下载情况</h2>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="loading">
+            数据载入，请稍候...
+            </div>
+
+            <div id="chart_soft5" style="width: 850px;height:500px;"></div>
+            <h2></h2>
+            <div id="chart_soft10" style="width: 850px;height:500px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script src="/static/js/holder.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+<!-- 引入 vintage 主题 -->
+<script src="/static/js/theme/macarons.js"></script>
+
+<script defer="defer" type="text/javascript">
+
+    window.onload = function() {
+        $.ajax({
+            url: "/install/soft/current/req", //请求的url地址
+            dataType: "json", //返回格式为json
+            // async : true, //请求是否异步，默认为异步，这也是ajax重要特性
+            // data: data,    //参数值
+            type: "GET", //请求方式
+            beforeSend: function () {
+                //请求前的处理
+            },
+
+            success: function (data) {
+                $("#loading").hide();
+                $("#title_name").hide();
+                //请求成功时处理
+                console.log(data);
+                var soft_top5 = data["softtop5"];
+                var soft_top10 = data["softtop10"];
+                var soft_name5 = [];
+                var soft_name10 = [];
+                var soft_date_arr5 = [];
+                var soft_date_arr10 = [];
+                var soft_install_arr5 = [];
+                var soft_install_arr10 = [];
+
+                for(var i=0; i<soft_top5.length; i++) {
+                    soft_date_arr5 = [];
+                    for(var name in soft_top5[i]) {
+                        soft_name5.push(name);
+                        var soft_date_install5 = [];
+                        soft_date_arr5 = [];
+                        var soft = soft_top5[i][name];
+                        for(var j=0; j<soft.length; j++) {
+                            for(var date in soft[j]) {
+                                soft_date_arr5.push(date);
+                                soft_date_install5.push(soft[j][date]);
+                            }
+                        }
+                        soft_install_arr5.push(soft_date_install5);
+                    }
+                }
+
+                for(var k=0; k<soft_top10.length; k++) {
+                    soft_date_arr10 = [];
+                    for(var g_name in soft_top10[k]) {
+                        soft_name10.push(g_name);
+                        var soft_date_install10 = [];
+                        soft_date_arr10 = [];
+                        var game = soft_top10[k][g_name];
+                        for(var l=0; l<game.length; l++) {
+                            for(var g_date in game[l]) {
+                                soft_date_arr10.push(g_date);
+                                soft_date_install10.push(game[l][g_date]);
+                            }
+                        }
+                        soft_install_arr10.push(soft_date_install10);
+                    }
+                }
+
+                var softChart5 = echarts.init($("#chart_soft5").get(0), "");
+                var softChart10 = echarts.init($("#chart_soft10").get(0), "");
+                var soft5_option = {
+                    title: {
+                        text: '应用下载TOP5'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:soft_name5
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : soft_date_arr5
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    series : [
+                        {
+                            name:soft_name5[4],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr5[4]
+                        },
+                        {
+                            name:soft_name5[3],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr5[3]
+                        },
+                        {
+                            name:soft_name5[2],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr5[2]
+                        },
+                        {
+                            name:soft_name5[1],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr5[1]
+                        },
+                        {
+                            name:soft_name5[0],
+                            type:'line',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr5[0]
+                        }
+                    ]
+                };
+                softChart5.setOption(soft5_option);
+
+                var soft10_option = {
+                    title: {
+                        text: '应用下载TOP5-10'
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:soft_name10
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis : [
+                        {
+                            type : 'category',
+                            boundaryGap : false,
+                            data : soft_date_arr10
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    series : [
+                        {
+                            name:soft_name10[4],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr10[4]
+                        },
+                        {
+                            name:soft_name10[3],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr10[3]
+                        },
+                        {
+                            name:soft_name10[2],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr10[2]
+                        },
+                        {
+                            name:soft_name10[1],
+                            type:'line',
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr10[1]
+                        },
+                        {
+                            name:soft_name10[0],
+                            type:'line',
+                            label: {
+                                normal: {
+                                    show: true,
+                                    position: 'top'
+                                }
+                            },
+                            areaStyle: {normal: {}},
+                            data:soft_install_arr10[0]
+                        }
+                    ]
+                };
+                softChart10.setOption(soft10_option);
+            },
+
+            complete: function () {
+                //请求完成的处理
+            },
+
+            error: function (err) {
+                //请求出错处理
+                console.log(err);
+            }
+        });
+    }
+</script>
+
+</body></html>

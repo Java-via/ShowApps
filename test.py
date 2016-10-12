@@ -1,8 +1,8 @@
 # _*_ coding: utf-8 _*_
 import pymysql
-import util
+import z_util
 
-conn, cur = util.condb()
+conn, cur = z_util.condb()
 cur.execute("SELECT DISTINCT a_pkgname FROM t_apps_basic_united")
 
 pkgname_set = set(item[0] for item in cur.fetchall())
