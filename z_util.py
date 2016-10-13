@@ -40,17 +40,17 @@ def install_softgame(soft_game):
             dict_rank_soft = {"rankinfo_" + soft_game : dict_rank_soft}
 
             # save pic of topsoft
-            i = 0
-            for soft in top_soft:
-                logging.debug("Soft is %s", soft)
-                url = str(soft[2])
-                path = "static/pic/top" + soft_game + str(i) + ".jpg"
-                logging.debug("path is %s", path)
-                data = request.urlopen(url).read()
-                f = open(path, "wb")
-                f.write(data)
-                i += 1
-                f.close()
+            # i = 0
+            # for soft in top_soft:
+            #     logging.debug("Soft is %s", soft)
+            #     url = str(soft[2])
+            #     path = "/static/pic/top" + soft_game + str(i) + ".jpg"
+            #     logging.debug("path is %s", path)
+            #     data = request.urlopen(url).read()
+            #     f = open(path, "wb")
+            #     f.write(data)
+            #     i += 1
+            #     f.close()
             return dict_rank_soft
         else:
             return "no data"
@@ -67,21 +67,22 @@ def speed_softgame(soft_game):
         conn.commit()
         speed_soft = cur.fetchall()
         if speed_soft:
-            dict_speed_soft = [(item[0], item[1], item[2], item[3], str(item[4]) + "%") for item in speed_soft]
+            dict_speed_soft = [(item[0], item[1], item[2], item[3], str(item[4]) + "%",
+                                str(item[5]).replace("b", "").replace("'", "")) for item in speed_soft]
             dict_speed_soft = {"speed_" + soft_game: dict_speed_soft}
 
             # save pic of speedsoft
-            i = 0
-            for soft in speed_soft:
-                logging.debug("Game is %s", soft)
-                url = str(soft[1])
-                path = "static/pic/speed" + soft_game + str(i) + ".jpg"
-                logging.debug("path is %s", path)
-                data = request.urlopen(url).read()
-                f = open(path, "wb")
-                f.write(data)
-                i += 1
-                f.close()
+            # i = 0
+            # for soft in speed_soft:
+            #     logging.debug("Game is %s", soft)
+            #     url = str(soft[1])
+            #     path = "/static/pic/speed" + soft_game + str(i) + ".jpg"
+            #     logging.debug("path is %s", path)
+            #     data = request.urlopen(url).read()
+            #     f = open(path, "wb")
+            #     f.write(data)
+            #     i += 1
+            #     f.close()
             return dict_speed_soft
         else:
             return "no data"
@@ -216,6 +217,73 @@ def speed_softgame_current(soft_game):
             return "no data"
     except Exception as ex:
         logging.error("Speed current error: %s", ex)
+        return "error"
+
+
+def install_classify(classify):
+    """
+    show index page, top10 of soft, game, and speed
+    :return:
+    """
+    conn, cur = condb()
+    try:
+        # yesterday soft TOP10
+        sql = SQL_YS_INSTALL_TOP_CLASSIFY
+        cur.execute(sql, classify)
+        top_soft = cur.fetchall()
+        if top_soft:
+            dict_rank_soft = [(item[0], item[1], item[2], int(item[3])) for item in top_soft]
+            dict_rank_soft = {"rankinfo_classify": dict_rank_soft}
+
+            # save pic of topsoft
+            # i = 0
+            # for soft in top_soft:
+            #     logging.debug("Soft is %s", soft)
+            #     url = str(soft[2])
+            #     path = "static/pic/topclassify" + str(i) + ".jpg"
+            #     logging.debug("path is %s", path)
+            #     data = request.urlopen(url).read()
+            #     f = open(path, "wb")
+            #     f.write(data)
+            #     i += 1
+            #     f.close()
+            return dict_rank_soft
+        else:
+            return "no data"
+    except Exception as ex:
+        logging.error("Install soft_game error %s", ex)
+        return "error"
+
+
+def speed_classify(classify):
+    conn, cur = condb()
+    try:
+        sql = SQL_YS_SPEED_TOP_CLASSIFY
+        cur.execute(sql, classify)
+        conn.commit()
+        speed_soft = cur.fetchall()
+        if speed_soft:
+            dict_speed_soft = [(item[0], item[1], item[2], item[3], str(item[4]) + "%",
+                                str(item[5]).replace("b", "").replace("'", "")) for item in speed_soft]
+            dict_speed_soft = {"speed_classify": dict_speed_soft}
+
+            # save pic of speedsoft
+            # i = 0
+            # for soft in speed_soft:
+            #     logging.debug("Game is %s", soft)
+            #     url = str(soft[1])
+            #     path = "static/pic/speedclassify" + str(i) + ".jpg"
+            #     logging.debug("path is %s", path)
+            #     data = request.urlopen(url).read()
+            #     f = open(path, "wb")
+            #     f.write(data)
+            #     i += 1
+            #     f.close()
+            return dict_speed_soft
+        else:
+            return "no data"
+    except Exception as ex:
+        logging.error("Speed softgame error: %s", ex)
         return "error"
 
 

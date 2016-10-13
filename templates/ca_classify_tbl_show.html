@@ -87,6 +87,7 @@
                             <tr>
                                 <th>ranking</th>
                                 <th>name</th>
+                                <th>speed</th>
                                 <th>rate</th>
                             </tr>
                         </table>
@@ -115,6 +116,7 @@
                             <tr>
                                 <th>ranking</th>
                                 <th>name</th>
+                                <th>speed</th>
                                 <th>rate</th>
                             </tr>
                         </table>
@@ -122,6 +124,40 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="classify_show" style="display: none">
+            <h2 class="sub-header">下载排行</h2>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 >应用综合TOP10</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="ranking_classify">
+                            <tr>
+                                <th>ranking</th>
+                                <th>name</th>
+                                <th>install</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-0.5"></div>
+                <div class="col-md-6" id="dv_speed_classify_top10">
+                    <h3 >应用增速TOP10</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="ranking_classify_speed">
+                            <tr>
+                                <th>ranking</th>
+                                <th>name</th>
+                                <th>speed</th>
+                                <th>rate</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="search_show" style="display: none">
             <h2 class="sub-header">查询结果</h2>
             <div class="table-responsive">
@@ -181,15 +217,137 @@
                     var game_list = "";
 
                     for (var soft_key in soft_tags) {
-                        soft_list += "<li><a href=&quot;#&quot;>" + soft_key + "</a></li>";
+                        soft_list += "<li><a href='#'>" + soft_key + "</a></li>";
                     }
 
                     for (var game_key in game_tags) {
-                        game_list += "<li><a href=&quot;#&quot;>" + game_key + "</a></li>";
+                        game_list += "<li><a href='#'>" + game_key + "</a></li>";
                     }
 
                     $("#soft_tags_list").append(soft_list);
                     $("#game_tags_list").append(game_list);
+
+                    $("#soft_tags_list li:gt(0)").click(function () {
+                        var text = $(this).text();
+                        $.ajax({
+                            url: "/item/classify/req", //请求的url地址
+                            dataType: "json", //返回格式为json
+                //            async : false, //请求是否异步，默认为异步，这也是ajax重要特性
+                            data: {"classify": text},    //参数值
+                            type: "GET", //请求方式
+                            beforeSend: function () {
+                                //请求前的处理
+                                $("#rank_show").hide();
+                                $("#classify_show").hide();
+                                $("#loading").show();
+
+                            },
+                            success: function (data) {
+                                if(data != "no data") {
+                                    $("#loading").hide();
+                                    $("#classify_show").show();
+                                    $("#ranking_classify tbody").html("");
+                                    $("#ranking_classify_speed tbody").html("");
+                                    var ranking_classify = data[2]["rankinfo_classify"];
+                                    var speeding_classify = data[3]["speed_classify"];
+                                    var name_classify = [];
+                                    var install_classify = [];
+                                    var tbody_classify = "";
+                                    var tbody_classify_speed = "";
+                                    for (var item = 0; item < 10; item++) {
+                                        name_classify.push(ranking_classify[item][1].toString());
+                                        install_classify.push(ranking_classify[item][2]);
+                                        tbody_classify += "<tr><td>" + (item + 1) + "</td><td><img src='" + ranking_classify[item][2] + "'"
+                                                + " width=30 height=30>"
+                                                + "&nbsp;&nbsp;" + ranking_classify[item][1] + "</td><td>" + ranking_classify[item][3] + "</td></tr>";
+                                    }
+                                    $("#ranking_classify").append(tbody_classify);
+
+                                    for (var item = 0; item < 10; item++) {
+                                        name_classify.push(speeding_classify[item][1].toString());
+                                        install_classify.push(speeding_classify[item][2]);
+                                        tbody_classify_speed += "<tr><td>" + (item + 1) + "</td><td><img src='" + speeding_classify[item][1] + "'"
+                                                + " width=30 height=30>"
+                                                + "&nbsp;&nbsp;" + speeding_classify[item][3] + "</td><td>" + speeding_classify[item][5] + "</td><td>"
+                                                + speeding_classify[item][4] + "</td></tr>";
+                                    }
+
+                                    $("#ranking_classify_speed").append(tbody_classify_speed);
+                                }else {
+                                    $("#rank_show").hide();
+                                    window.alert("抱歉，暂无数据");
+                                }
+
+                            },
+                            complete: function () {
+
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
+
+                    $("#game_tags_list li:gt(0)").click(function () {
+                        var text = $(this).text();
+                        $.ajax({
+                            url: "/item/classify/req", //请求的url地址
+                            dataType: "json", //返回格式为json
+                //            async : false, //请求是否异步，默认为异步，这也是ajax重要特性
+                            data: {"classify": text},    //参数值
+                            type: "GET", //请求方式
+                            beforeSend: function () {
+                                //请求前的处理
+                                $("#rank_show").hide();
+                                $("#classify_show").hide();
+                                $("#loading").show();
+
+                            },
+                            success: function (data) {
+                                if(data != "no data") {
+                                    $("#loading").hide();
+                                    $("#classify_show").show();
+                                    $("#ranking_classify tbody").html("");
+                                    $("#ranking_classify_speed tbody").html("");
+                                    var ranking_classify = data[2]["rankinfo_classify"];
+                                    var speeding_classify = data[3]["speed_classify"];
+                                    var name_classify = [];
+                                    var install_classify = [];
+                                    var tbody_classify = "";
+                                    var tbody_classify_speed = "";
+                                    for (var item = 0; item < 10; item++) {
+                                        name_classify.push(ranking_classify[item][1].toString());
+                                        install_classify.push(ranking_classify[item][2]);
+                                        tbody_classify += "<tr><td>" + (item + 1) + "</td><td><img src='" + ranking_classify[item][2] + "'"
+                                                + " width=30 height=30>"
+                                                + "&nbsp;&nbsp;" + ranking_classify[item][1] + "</td><td>" + ranking_classify[item][3] + "</td></tr>";
+                                    }
+                                    $("#ranking_classify").append(tbody_classify);
+
+                                    for (var item = 0; item < 10; item++) {
+                                        name_classify.push(speeding_classify[item][1].toString());
+                                        install_classify.push(speeding_classify[item][2]);
+                                        tbody_classify_speed += "<tr><td>" + (item + 1) + "</td><td><img src='" + speeding_classify[item][1] + "'"
+                                                + " width=30 height=30>"
+                                                + "&nbsp;&nbsp;" + speeding_classify[item][3] + "</td><td>" + speeding_classify[item][5] + "</td><td>"
+                                                + speeding_classify[item][4] + "</td></tr>";
+                                    }
+
+                                    $("#ranking_classify_speed").append(tbody_classify_speed);
+                                }else {
+                                    $("#rank_show").hide();
+                                    window.alert("抱歉，暂无数据");
+                                }
+
+                            },
+                            complete: function () {
+
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
 
                     console.log(ranking_game);
                     console.log(ranking_soft);
@@ -197,7 +355,7 @@
                     for (var item = 0; item < 10; item++) {
                         name.push(ranking_soft[item][1].toString());
                         install.push(ranking_soft[item][2]);
-                        tbody_soft += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topsoft" + item + ".jpg'"
+                        tbody_soft += "<tr><td>" + (item + 1) + "</td><td><img src='" + ranking_soft[item][2] + "'"
                                 + " width=30 height=30>"
                                 + "&nbsp;&nbsp;" + ranking_soft[item][1] + "</td><td>" + ranking_soft[item][3] + "</td></tr>";
                     }
@@ -205,7 +363,7 @@
                     for (var item = 0; item < 10; item++) {
                         name.push(ranking_game[item][1].toString());
                         install.push(ranking_game[item][2]);
-                        tbody_game += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topgame" + item + ".jpg'"
+                        tbody_game += "<tr><td>" + (item + 1) + "</td><td><img src='" + ranking_game[item][2] + "'"
                                 + " width=30 height=30>"
                                 + "&nbsp;&nbsp;" + ranking_game[item][1] + "</td><td>" + ranking_game[item][3] + "</td></tr>";
                     }
@@ -216,17 +374,19 @@
                     for (var item = 0; item < 10; item++) {
                         name.push(speed_soft[item][1].toString());
                         install.push(speed_soft[item][2]);
-                        tbody_soft_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedsoft" + item + ".jpg'"
+                        tbody_soft_speed += "<tr><td>" + (item + 1) + "</td><td><img src='" + speed_soft[item][1] + "'"
                                 + " width=30 height=30>"
-                                + "&nbsp;&nbsp;" + speed_soft[item][3] + "</td><td>" + speed_soft[item][4] + "</td></tr>";
+                                + "&nbsp;&nbsp;" + speed_soft[item][3] + "</td><td>" + speed_soft[item][5] + "</td><td>"
+                                + speed_soft[item][4] + "</td></tr>";
                     }
 
                     for (var item = 0; item < 10; item++) {
                         name.push(speed_game[item][1].toString());
                         install.push(speed_game[item][2]);
-                        tbody_game_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedgame" + item + ".jpg'"
+                        tbody_game_speed += "<tr><td>" + (item + 1) + "</td><td><img src='" + speed_game[item][1] + "'"
                                 + " width=30 height=30>"
-                                + "&nbsp;&nbsp;" + speed_game[item][3] + "</td><td>" + speed_game[item][4] + "</td></tr>";
+                                + "&nbsp;&nbsp;" + speed_game[item][3] + "</td><td>" + speed_game[item][5] + "</td><td>"
+                                + speed_game[item][4] + "</td></tr>";
                     }
 
                     $("#ranking_soft_speed").append(tbody_soft_speed);
@@ -247,17 +407,7 @@
         });
     };
 
-    /*$("#back_to_index").click(
-            function () {
-                console.log("1111");
-                if(load_ajax) {
-                    console.log("22222");
-                    load_ajax.abort();
-                    window.location.href="/";
-                    console.log("33333");
-                }
-            }
-    );*/
+
 
     $("#search_btn").click(
             function () {

@@ -180,6 +180,25 @@ def get_speed_game_current():
         return "no data"
 
 
+@app.route('/item/classify/req', methods=["POST", "GET"])
+def get_item_classify():
+    """
+    show index page, top10 of soft, game, and speed
+    :return:
+    """
+    classify = flask_request.args.get("classify")
+    # yesterday install soft TOP10]
+    dict_rank_soft = install_classify(classify)
+
+    # yesterday speed soft TOP10
+    dict_speed_soft = speed_classify(classify)
+
+    if dict_rank_soft != "no data" and dict_speed_soft != "no data":
+        return jsonify(soft_classify, game_classify, dict_rank_soft, dict_speed_soft)
+    else:
+        return "no data"
+
+
 @app.route('/index/search')
 def index_search():
     """
