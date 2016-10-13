@@ -87,7 +87,7 @@
                             <tr>
                                 <th>ranking</th>
                                 <th>name</th>
-                                <th>speed</th>
+                                <th>rate</th>
                             </tr>
                         </table>
                     </div>
@@ -115,7 +115,7 @@
                             <tr>
                                 <th>ranking</th>
                                 <th>name</th>
-                                <th>speed</th>
+                                <th>rate</th>
                             </tr>
                         </table>
                     </div>
@@ -162,74 +162,79 @@
             },
             success: function (data) {
                 //请求成功时处理
-                $("#loading").hide();
-                $("#rank_show").show();
-                var soft_tags = data[0];
-                var game_tags = data[1];
-                var ranking_soft = data[2]["rankinfo_soft"];
-                var ranking_game = data[3]["rankinfo_game"];
-                var speed_soft = data[4]["speed_soft"];
-                var speed_game = data[5]["speed_game"];
-                var name = [];
-                var install = [];
-                var tbody_soft = "";
-                var tbody_game = "";
-                var tbody_soft_speed = "";
-                var tbody_game_speed = "";
-                var soft_list = "";
-                var game_list = "";
+                if(data != "no data") {
+                    $("#loading").hide();
+                    $("#rank_show").show();
+                    var soft_tags = data[0];
+                    var game_tags = data[1];
+                    var ranking_soft = data[2]["rankinfo_soft"];
+                    var ranking_game = data[3]["rankinfo_game"];
+                    var speed_soft = data[4]["speed_soft"];
+                    var speed_game = data[5]["speed_game"];
+                    var name = [];
+                    var install = [];
+                    var tbody_soft = "";
+                    var tbody_game = "";
+                    var tbody_soft_speed = "";
+                    var tbody_game_speed = "";
+                    var soft_list = "";
+                    var game_list = "";
 
-                for (var soft_key in soft_tags) {
-                    soft_list += "<li><a href=&quot;#&quot;>" + soft_key + "</a></li>";
+                    for (var soft_key in soft_tags) {
+                        soft_list += "<li><a href=&quot;#&quot;>" + soft_key + "</a></li>";
+                    }
+
+                    for (var game_key in game_tags) {
+                        game_list += "<li><a href=&quot;#&quot;>" + game_key + "</a></li>";
+                    }
+
+                    $("#soft_tags_list").append(soft_list);
+                    $("#game_tags_list").append(game_list);
+
+                    console.log(ranking_game);
+                    console.log(ranking_soft);
+
+                    for (var item = 0; item < 10; item++) {
+                        name.push(ranking_soft[item][1].toString());
+                        install.push(ranking_soft[item][2]);
+                        tbody_soft += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topsoft" + item + ".jpg'"
+                                + " width=30 height=30>"
+                                + "&nbsp;&nbsp;" + ranking_soft[item][1] + "</td><td>" + ranking_soft[item][3] + "</td></tr>";
+                    }
+
+                    for (var item = 0; item < 10; item++) {
+                        name.push(ranking_game[item][1].toString());
+                        install.push(ranking_game[item][2]);
+                        tbody_game += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topgame" + item + ".jpg'"
+                                + " width=30 height=30>"
+                                + "&nbsp;&nbsp;" + ranking_game[item][1] + "</td><td>" + ranking_game[item][3] + "</td></tr>";
+                    }
+
+                    $("#ranking_soft").append(tbody_soft);
+                    $("#ranking_game").append(tbody_game);
+
+                    for (var item = 0; item < 10; item++) {
+                        name.push(speed_soft[item][1].toString());
+                        install.push(speed_soft[item][2]);
+                        tbody_soft_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedsoft" + item + ".jpg'"
+                                + " width=30 height=30>"
+                                + "&nbsp;&nbsp;" + speed_soft[item][3] + "</td><td>" + speed_soft[item][4] + "</td></tr>";
+                    }
+
+                    for (var item = 0; item < 10; item++) {
+                        name.push(speed_game[item][1].toString());
+                        install.push(speed_game[item][2]);
+                        tbody_game_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedgame" + item + ".jpg'"
+                                + " width=30 height=30>"
+                                + "&nbsp;&nbsp;" + speed_game[item][3] + "</td><td>" + speed_game[item][4] + "</td></tr>";
+                    }
+
+                    $("#ranking_soft_speed").append(tbody_soft_speed);
+                    $("#ranking_game_speed").append(tbody_game_speed);
+                } else {
+                    window.alert("抱歉，暂无数据");
                 }
 
-                for (var game_key in game_tags) {
-                    game_list += "<li><a href=&quot;#&quot;>" + game_key + "</a></li>";
-                }
-
-                $("#soft_tags_list").append(soft_list);
-                $("#game_tags_list").append(game_list);
-
-                console.log(ranking_game);
-                console.log(ranking_soft);
-
-                for (var item = 0; item < 10; item++) {
-                    name.push(ranking_soft[item][1].toString());
-                    install.push(ranking_soft[item][2]);
-                    tbody_soft += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topsoft" + item + ".jpg'"
-                            + " width=30 height=30>"
-                            + "&nbsp;&nbsp;" + ranking_soft[item][1] + "</td><td>" + ranking_soft[item][3] + "</td></tr>";
-                }
-
-                for (var item = 0; item < 10; item++) {
-                    name.push(ranking_game[item][1].toString());
-                    install.push(ranking_game[item][2]);
-                    tbody_game += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/topgame" + item + ".jpg'"
-                            + " width=30 height=30>"
-                            + "&nbsp;&nbsp;" + ranking_game[item][1] + "</td><td>" + ranking_game[item][3] + "</td></tr>";
-                }
-
-                $("#ranking_soft").append(tbody_soft);
-                $("#ranking_game").append(tbody_game);
-
-                for (var item = 0; item < 10; item++) {
-                    name.push(speed_soft[item][1].toString());
-                    install.push(speed_soft[item][2]);
-                    tbody_soft_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedsoft" + item + ".jpg'"
-                            + " width=30 height=30>"
-                            + "&nbsp;&nbsp;" + speed_soft[item][3] + "</td><td>" + speed_soft[item][4] + "</td></tr>";
-                }
-
-                for (var item = 0; item < 10; item++) {
-                    name.push(speed_game[item][1].toString());
-                    install.push(speed_game[item][2]);
-                    tbody_game_speed += "<tr><td>" + (item + 1) + "</td><td><img src='/static/pic/speedgame" + item + ".jpg'"
-                            + " width=30 height=30>"
-                            + "&nbsp;&nbsp;" + speed_game[item][3] + "</td><td>" + speed_game[item][4] + "</td></tr>";
-                }
-
-                $("#ranking_soft_speed").append(tbody_soft_speed);
-                $("#ranking_game_speed").append(tbody_game_speed);
             },
 
             complete: function () {

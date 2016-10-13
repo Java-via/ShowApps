@@ -96,201 +96,204 @@
             },
 
             success: function (data) {
-                $("#loading").hide();
-                $("#title_name").hide();
-                //请求成功时处理
-                var game_top5 = data["gametop5"];
-                var game_top10 = data["gametop10"];
-                var game_name5 = [];
-                var game_name10 = [];
-                var game_date_arr5 = [];
-                var game_date_arr10 = [];
-                var game_speed_arr5 = [];
-                var game_speed_arr10 = [];
+                if(data != "no data") {
+                    $("#loading").hide();
+                    $("#title_name").hide();
+                    var game_top5 = data["gametop5"];
+                    var game_top10 = data["gametop10"];
+                    var game_name5 = [];
+                    var game_name10 = [];
+                    var game_date_arr5 = [];
+                    var game_date_arr10 = [];
+                    var game_speed_arr5 = [];
+                    var game_speed_arr10 = [];
 
-                for(var i=0; i<game_top5.length; i++) {
-                    game_date_arr5 = [];
-                    for(var name in game_top5[i]) {
-                        game_name5.push(name);
-                        var game_date_speed5 = [];
+                    for(var i=0; i<game_top5.length; i++) {
                         game_date_arr5 = [];
-                        var game = game_top5[i][name];
-                        for(var j=0; j<game.length; j++) {
-                            for(var date in game[j]) {
-                                game_date_arr5.push(date);
-                                game_date_speed5.push(game[j][date]);
+                        for(var name in game_top5[i]) {
+                            game_name5.push(name);
+                            var game_date_speed5 = [];
+                            game_date_arr5 = [];
+                            var game = game_top5[i][name];
+                            for(var j=0; j<game.length; j++) {
+                                for(var date in game[j]) {
+                                    game_date_arr5.push(date);
+                                    game_date_speed5.push(game[j][date]);
+                                }
                             }
+                            game_speed_arr5.push(game_date_speed5);
                         }
-                        game_speed_arr5.push(game_date_speed5);
                     }
-                }
 
-                for(var k=0; k<game_top10.length; k++) {
-                    game_date_arr10 = [];
-                    for(var g_name in game_top10[k]) {
-                        game_name10.push(g_name);
-                        var game_date_speed10 = [];
+                    for(var k=0; k<game_top10.length; k++) {
                         game_date_arr10 = [];
-                        var g_game = game_top10[k][g_name];
-                        for(var l=0; l<g_game.length; l++) {
-                            for(var g_date in g_game[l]) {
-                                game_date_arr10.push(g_date);
-                                game_date_speed10.push(g_game[l][g_date]);
+                        for(var g_name in game_top10[k]) {
+                            game_name10.push(g_name);
+                            var game_date_speed10 = [];
+                            game_date_arr10 = [];
+                            var g_game = game_top10[k][g_name];
+                            for(var l=0; l<g_game.length; l++) {
+                                for(var g_date in g_game[l]) {
+                                    game_date_arr10.push(g_date);
+                                    game_date_speed10.push(g_game[l][g_date]);
+                                }
                             }
+                            game_speed_arr10.push(game_date_speed10);
                         }
-                        game_speed_arr10.push(game_date_speed10);
                     }
+
+                    var top5Chart = echarts.init($("#chart_top5").get(0), "");
+                    var top10Chart = echarts.init($("#chart_top10").get(0), "");
+                    var top5_option = {
+                        title: {
+                            text: '游戏增速TOP5'
+                        },
+                        tooltip : {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data:game_name5
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis : [
+                            {
+                                type : 'category',
+                                boundaryGap : false,
+                                data : game_date_arr5
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value'
+                            }
+                        ],
+                        series : [
+                            {
+                                name:game_name5[4],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr5[4]
+                            },
+                            {
+                                name:game_name5[3],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr5[3]
+                            },
+                            {
+                                name:game_name5[2],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr5[2]
+                            },
+                            {
+                                name:game_name5[1],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr5[1]
+                            },
+                            {
+                                name:game_name5[0],
+                                type:'line',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr5[0]
+                            }
+                        ]
+                    };
+                    top5Chart.setOption(top5_option);
+
+                    var top10_option = {
+                        title: {
+                            text: '游戏增速TOP5-10'
+                        },
+                        tooltip : {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data:game_name10
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis : [
+                            {
+                                type : 'category',
+                                boundaryGap : false,
+                                data : game_date_arr10
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value'
+                            }
+                        ],
+                        series : [
+                            {
+                                name:game_name10[4],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr10[4]
+                            },
+                            {
+                                name:game_name10[3],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr10[3]
+                            },
+                            {
+                                name:game_name10[2],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr10[2]
+                            },
+                            {
+                                name:game_name10[1],
+                                type:'line',
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr10[1]
+                            },
+                            {
+                                name:game_name10[0],
+                                type:'line',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                areaStyle: {normal: {}},
+                                data:game_speed_arr10[0]
+                            }
+                        ]
+                    };
+                    top10Chart.setOption(top10_option);
+                }else {
+                    window.alert("抱歉，暂无数据");
                 }
-
-                var top5Chart = echarts.init($("#chart_top5").get(0), "");
-                var top10Chart = echarts.init($("#chart_top10").get(0), "");
-                var top5_option = {
-                    title: {
-                        text: '游戏增速TOP5'
-                    },
-                    tooltip : {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data:game_name5
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            boundaryGap : false,
-                            data : game_date_arr5
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value'
-                        }
-                    ],
-                    series : [
-                        {
-                            name:game_name5[4],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr5[4]
-                        },
-                        {
-                            name:game_name5[3],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr5[3]
-                        },
-                        {
-                            name:game_name5[2],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr5[2]
-                        },
-                        {
-                            name:game_name5[1],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr5[1]
-                        },
-                        {
-                            name:game_name5[0],
-                            type:'line',
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'top'
-                                }
-                            },
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr5[0]
-                        }
-                    ]
-                };
-                top5Chart.setOption(top5_option);
-
-                var top10_option = {
-                    title: {
-                        text: '游戏增速TOP5-10'
-                    },
-                    tooltip : {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data:game_name10
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            boundaryGap : false,
-                            data : game_date_arr10
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value'
-                        }
-                    ],
-                    series : [
-                        {
-                            name:game_name10[4],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr10[4]
-                        },
-                        {
-                            name:game_name10[3],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr10[3]
-                        },
-                        {
-                            name:game_name10[2],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr10[2]
-                        },
-                        {
-                            name:game_name10[1],
-                            type:'line',
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr10[1]
-                        },
-                        {
-                            name:game_name10[0],
-                            type:'line',
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'top'
-                                }
-                            },
-                            areaStyle: {normal: {}},
-                            data:game_speed_arr10[0]
-                        }
-                    ]
-                };
-                top10Chart.setOption(top10_option);
             },
 
             complete: function () {

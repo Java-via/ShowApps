@@ -20,6 +20,7 @@ def condb():
     """
     conn = pymysql.connect(host=SDB_HOST, user=SDB_USER, password=SDB_PWD, db=SDB_DB, charset=SDB_CHARSET)
     cur = conn.cursor()
+    conn.autocommit(1)
     return conn, cur
 
 
@@ -33,24 +34,26 @@ def install_softgame(soft_game):
         # yesterday soft TOP10
         sql = SQL_YS_INSTALL_TOP_SOFTGAME
         cur.execute(sql, soft_game)
-        conn.commit()
         top_soft = cur.fetchall()
-        dict_rank_soft = [(item[0], item[1], item[2], int(item[3])) for item in top_soft]
-        dict_rank_soft = {"rankinfo_" + soft_game : dict_rank_soft}
+        if top_soft:
+            dict_rank_soft = [(item[0], item[1], item[2], int(item[3])) for item in top_soft]
+            dict_rank_soft = {"rankinfo_" + soft_game : dict_rank_soft}
 
-        # save pic of topsoft
-        i = 0
-        for soft in top_soft:
-            logging.debug("Soft is %s", soft)
-            url = str(soft[2])
-            path = "static/pic/top" + soft_game + str(i) + ".jpg"
-            logging.debug("path is %s", path)
-            data = request.urlopen(url).read()
-            f = open(path, "wb")
-            f.write(data)
-            i += 1
-            f.close()
-        return dict_rank_soft
+            # save pic of topsoft
+            i = 0
+            for soft in top_soft:
+                logging.debug("Soft is %s", soft)
+                url = str(soft[2])
+                path = "static/pic/top" + soft_game + str(i) + ".jpg"
+                logging.debug("path is %s", path)
+                data = request.urlopen(url).read()
+                f = open(path, "wb")
+                f.write(data)
+                i += 1
+                f.close()
+            return dict_rank_soft
+        else:
+            return "no data"
     except Exception as ex:
         logging.error("Install soft_game error %s", ex)
         return "error"
@@ -63,22 +66,25 @@ def speed_softgame(soft_game):
         cur.execute(sql, soft_game)
         conn.commit()
         speed_soft = cur.fetchall()
-        dict_speed_soft = [(item[0], item[1], item[2], item[3], int(item[4])) for item in speed_soft]
-        dict_speed_soft = {"speed_" + soft_game: dict_speed_soft}
+        if speed_soft:
+            dict_speed_soft = [(item[0], item[1], item[2], item[3], str(item[4]) + "%") for item in speed_soft]
+            dict_speed_soft = {"speed_" + soft_game: dict_speed_soft}
 
-        # save pic of speedsoft
-        i = 0
-        for soft in speed_soft:
-            logging.debug("Game is %s", soft)
-            url = str(soft[1])
-            path = "static/pic/speed" + soft_game + str(i) + ".jpg"
-            logging.debug("path is %s", path)
-            data = request.urlopen(url).read()
-            f = open(path, "wb")
-            f.write(data)
-            i += 1
-            f.close()
-        return dict_speed_soft
+            # save pic of speedsoft
+            i = 0
+            for soft in speed_soft:
+                logging.debug("Game is %s", soft)
+                url = str(soft[1])
+                path = "static/pic/speed" + soft_game + str(i) + ".jpg"
+                logging.debug("path is %s", path)
+                data = request.urlopen(url).read()
+                f = open(path, "wb")
+                f.write(data)
+                i += 1
+                f.close()
+            return dict_speed_soft
+        else:
+            return "no data"
     except Exception as ex:
         logging.error("Speed softgame error: %s", ex)
         return "error"
@@ -92,32 +98,39 @@ def speed_top5_current(soft_game):
     conn, cur = condb()
     # current 10 day's speed of yesterday soft speed top5
     sql = SQL_CRNT_SPEED_TOP_SOFTGAME
-    cur.execute(sql, soft_game)
-    app_top10 = cur.fetchall()
-    app_dic = {}
-    date_speed_list = []
-    app_speed_disc = {}
-    app_speed_list = []
-    cur_app = app_top10[0]
-    app_dic[cur_app[2].strftime('%Y-%m-%d')] = cur_app[3]
-    date_speed_list.append(app_dic)
-
-    for app in app_top10[1:]:
-        app_dic = {}
-        app_speed_disc = {}
-        if cur_app[0] == app[0]:
-            app_dic[app[2].strftime('%Y-%m-%d')] = app[3]
-            date_speed_list.append(app_dic)
-        else:
-            app_speed_disc[cur_app[1]] = date_speed_list
-            app_speed_list.append(app_speed_disc)
-            cur_app = app
+    try:
+        cur.execute(sql, soft_game)
+        app_top10 = cur.fetchall()
+        if app_top10:
+            app_dic = {}
             date_speed_list = []
+            app_speed_disc = {}
+            app_speed_list = []
+            cur_app = app_top10[0]
             app_dic[cur_app[2].strftime('%Y-%m-%d')] = cur_app[3]
             date_speed_list.append(app_dic)
-    app_speed_disc[cur_app[1]] = date_speed_list
-    app_speed_list.append(app_speed_disc)
-    return app_speed_list
+
+            for app in app_top10[1:]:
+                app_dic = {}
+                app_speed_disc = {}
+                if cur_app[0] == app[0]:
+                    app_dic[app[2].strftime('%Y-%m-%d')] = app[3]
+                    date_speed_list.append(app_dic)
+                else:
+                    app_speed_disc[cur_app[1]] = date_speed_list
+                    app_speed_list.append(app_speed_disc)
+                    cur_app = app
+                    date_speed_list = []
+                    app_dic[cur_app[2].strftime('%Y-%m-%d')] = cur_app[3]
+                    date_speed_list.append(app_dic)
+            app_speed_disc[cur_app[1]] = date_speed_list
+            app_speed_list.append(app_speed_disc)
+            return app_speed_list
+        else:
+            return "no data"
+    except Exception as ex:
+        logging.error("Speed current error: %s", ex)
+        return "error"
 
 
 def install_softgame_current(soft_game):
@@ -128,32 +141,39 @@ def install_softgame_current(soft_game):
     conn, cur = condb()
     # current 10 day's install of yesterday soft install top10
     sql = SQL_CRNT_INSTALL_TOP_SOFTGAME
-    cur.execute(sql, soft_game)
-    soft_top10 = cur.fetchall()
-    soft_dic = {}
-    date_install_list = []
-    soft_install_disc = {}
-    soft_install_list = []
-    cur_soft = soft_top10[0]
-    soft_dic[cur_soft[2].strftime('%Y-%m-%d')] = cur_soft[3]
-    date_install_list.append(soft_dic)
-
-    for soft in soft_top10[1:]:
-        soft_dic = {}
-        soft_install_disc = {}
-        if cur_soft[0] == soft[0]:
-            soft_dic[soft[2].strftime('%Y-%m-%d')] = soft[3]
-            date_install_list.append(soft_dic)
-        else:
-            soft_install_disc[cur_soft[1]] = date_install_list
-            soft_install_list.append(soft_install_disc)
-            cur_soft = soft
+    try:
+        cur.execute(sql, soft_game)
+        soft_top10 = cur.fetchall()
+        if soft_top10:
+            soft_dic = {}
             date_install_list = []
+            soft_install_disc = {}
+            soft_install_list = []
+            cur_soft = soft_top10[0]
             soft_dic[cur_soft[2].strftime('%Y-%m-%d')] = cur_soft[3]
             date_install_list.append(soft_dic)
-    soft_install_disc[cur_soft[1]] = date_install_list
-    soft_install_list.append(soft_install_disc)
-    return soft_install_list
+
+            for soft in soft_top10[1:]:
+                soft_dic = {}
+                soft_install_disc = {}
+                if cur_soft[0] == soft[0]:
+                    soft_dic[soft[2].strftime('%Y-%m-%d')] = soft[3]
+                    date_install_list.append(soft_dic)
+                else:
+                    soft_install_disc[cur_soft[1]] = date_install_list
+                    soft_install_list.append(soft_install_disc)
+                    cur_soft = soft
+                    date_install_list = []
+                    soft_dic[cur_soft[2].strftime('%Y-%m-%d')] = cur_soft[3]
+                    date_install_list.append(soft_dic)
+            soft_install_disc[cur_soft[1]] = date_install_list
+            soft_install_list.append(soft_install_disc)
+            return soft_install_list
+        else:
+            return "no data"
+    except Exception as ex:
+        logging.error("Install softgame error: %s", ex)
+        return "error"
 
 
 def speed_softgame_current(soft_game):
@@ -164,32 +184,39 @@ def speed_softgame_current(soft_game):
     conn, cur = condb()
     # current 10 day's speed of yesterday soft speed top10
     sql = SQL_CRNT_SPEED_TOP_SOFTGAME
-    cur.execute(sql, soft_game)
-    game_top10 = cur.fetchall()
-    game_dic = {}
-    date_speed_list = []
-    game_speed_disc = {}
-    game_speed_list = []
-    cur_game = game_top10[0]
-    game_dic[cur_game[2].strftime('%Y-%m-%d')] = cur_game[3]
-    date_speed_list.append(game_dic)
-
-    for game in game_top10[1:]:
-        game_dic = {}
-        game_speed_disc = {}
-        if cur_game[0] == game[0]:
-            game_dic[game[2].strftime('%Y-%m-%d')] = game[3]
-            date_speed_list.append(game_dic)
-        else:
-            game_speed_disc[cur_game[1]] = date_speed_list
-            game_speed_list.append(game_speed_disc)
-            cur_game = game
+    try:
+        cur.execute(sql, soft_game)
+        game_top10 = cur.fetchall()
+        if game_top10:
+            game_dic = {}
             date_speed_list = []
+            game_speed_disc = {}
+            game_speed_list = []
+            cur_game = game_top10[0]
             game_dic[cur_game[2].strftime('%Y-%m-%d')] = cur_game[3]
             date_speed_list.append(game_dic)
-    game_speed_disc[cur_game[1]] = date_speed_list
-    game_speed_list.append(game_speed_disc)
-    return game_speed_list
+
+            for game in game_top10[1:]:
+                game_dic = {}
+                game_speed_disc = {}
+                if cur_game[0] == game[0]:
+                    game_dic[game[2].strftime('%Y-%m-%d')] = game[3]
+                    date_speed_list.append(game_dic)
+                else:
+                    game_speed_disc[cur_game[1]] = date_speed_list
+                    game_speed_list.append(game_speed_disc)
+                    cur_game = game
+                    date_speed_list = []
+                    game_dic[cur_game[2].strftime('%Y-%m-%d')] = cur_game[3]
+                    date_speed_list.append(game_dic)
+            game_speed_disc[cur_game[1]] = date_speed_list
+            game_speed_list.append(game_speed_disc)
+            return game_speed_list
+        else:
+            return "no data"
+    except Exception as ex:
+        logging.error("Speed current error: %s", ex)
+        return "error"
 
 
 def useradd(useremail, username, userpwd):

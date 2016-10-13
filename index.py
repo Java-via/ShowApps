@@ -38,9 +38,11 @@ def get_speed_top5_current():
 
     # current 10 day's speed of yesterday game speed top5
     game_speed_list = speed_top5_current("game")
-
-    return jsonify({"softtop5": soft_speed_list[0: 5],
-                    "gametop5": game_speed_list[0: 5]})
+    if soft_speed_list != "no data" and game_speed_list != "no data":
+        return jsonify({"softtop5": soft_speed_list[0: 5],
+                        "gametop5": game_speed_list[0: 5]})
+    else:
+        return "no data"
 
 
 @app.route('/index/classify')
@@ -79,7 +81,11 @@ def get_classify():
     # yesterday speed game TOP10
     dict_speed_game = speed_softgame("game")
 
-    return jsonify(soft_classify, game_classify, dict_rank_soft, dict_rank_game, dict_speed_soft, dict_speed_game)
+    if dict_rank_soft != "no data" and dict_speed_game != "no data" and \
+                    dict_speed_soft != "no data" and dict_speed_game != "no data":
+        return jsonify(soft_classify, game_classify, dict_rank_soft, dict_rank_game, dict_speed_soft, dict_speed_game)
+    else:
+        return "no data"
 
 
 @app.route("/install/soft/current")
@@ -98,9 +104,11 @@ def get_install_soft_current():
     :return:
     """
     soft_install_list = install_softgame_current("soft")
-
-    return jsonify({"softtop5": soft_install_list[0: 5],
-                    "softtop10": soft_install_list[5: 10]})
+    if soft_install_list != "no data":
+        return jsonify({"softtop5": soft_install_list[0: 5],
+                        "softtop10": soft_install_list[5: 10]})
+    else:
+        return "no data"
 
 
 @app.route("/speed/soft/current")
@@ -119,9 +127,11 @@ def get_speed_soft_current():
     :return:
     """
     soft_speed_list = speed_softgame_current("soft")
-
-    return jsonify({"softtop5": soft_speed_list[0: 5],
-                    "softtop10": soft_speed_list[5: 10]})
+    if soft_speed_list != "no data":
+        return jsonify({"softtop5": soft_speed_list[0: 5],
+                        "softtop10": soft_speed_list[5: 10]})
+    else:
+        return "no data"
 
 
 @app.route("/install/game/current")
@@ -140,9 +150,11 @@ def get_install_game_current():
     :return:
     """
     game_install_list = install_softgame_current("game")
-
-    return jsonify({"gametop5": game_install_list[0: 5],
-                    "gametop10": game_install_list[5: 10]})
+    if game_install_list != "no data":
+        return jsonify({"gametop5": game_install_list[0: 5],
+                        "gametop10": game_install_list[5: 10]})
+    else:
+        return "no data"
 
 
 @app.route("/speed/game/current")
@@ -161,9 +173,11 @@ def get_speed_game_current():
     :return:
     """
     game_speed_list = speed_softgame_current("game")
-
-    return jsonify({"gametop5": game_speed_list[0: 5],
-                    "gametop10": game_speed_list[5: 10]})
+    if game_speed_list != "no data":
+        return jsonify({"gametop5": game_speed_list[0: 5],
+                        "gametop10": game_speed_list[5: 10]})
+    else:
+        return "no data"
 
 
 @app.route('/index/search')
