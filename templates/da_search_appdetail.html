@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://v3.bootcss.com/examples/dashboard/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="icon" href="../static/icon.jpg">
+
+    <title>应用数据统计</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/dashboard.css" rel="stylesheet">
+
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" style="font-size: 30px">应用信息查询</a>    <!-- 可在此设置回首页 -->
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">账号设置</a></li>
+                <li><a href="#">帮助信息</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" id="search_input" placeholder="查询...">
+                <button type="button" class="btn btn-default" id="search_btn">查询</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar" id="menu">
+            <ul class="nav nav-sidebar" id="soft_tags_list">
+                <li class="active "><a href="#" style="font-size: large; color: white">基本信息 <span class="sr-only"></span></a></li>
+            </ul>
+
+            <ul class="nav nav-sidebar" id="game_tags_list">
+                <li class="active"><a href="#search_show_more" style="font-size: large; color: white">更多信息 <span class="sr-only"></span></a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="loading" style="display: none;">
+            数据载入，请稍候...
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="hot_search_list">
+            <h2 class="sub-header">热点查询</h2>
+            <div class="row">
+                <div class="col-lg-2 col-lg-offset-2" id="center">
+                    <table class="table" id="tb_hot_app">
+                        <tr>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">QQ</button></td>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">微信</button></td>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">手机淘宝</button></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">贪吃蛇大作战</button></td>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">开心消消乐</button></td>
+                            <td style="padding: 40px"><button class="btn btn-info btn-lg btn-block" style="background-color: transparent; color: #c7254e; border: none">天天酷跑</button></td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="search_show_basic" style="display: none;">
+            <h2 class="sub-header" id="title_search_result">查询结果</h2>
+            <div class="table-responsive col-lg-6" style="padding-top: 60px">
+                <table class="table" id="tbl_search_result">
+                    <tr>
+                        <th style="border-color: transparent"><img style="height: 80px; width: 80px" id="th_img" src="#"></th>
+                        <th id="th_name" style="border-color: transparent; font-size: 20px; text-align: start; padding-bottom: 2px"></th>
+                    </tr>
+                    <tr>
+                        <td style="border-color: transparent">包名</td>
+                        <td style="border-color: transparent" id="td_pkgname"></td>
+                    </tr>
+                    <tr>
+                        <td>开发商</td>
+                        <td id="td_publisher"></td>
+                    </tr>
+                    <tr>
+                        <td>类别</td>
+                        <td id="td_classify"></td>
+                    </tr>
+                    <tr>
+                        <td>最新版本</td>
+                        <td id="td_version"></td>
+                    </tr>
+                    <tr>
+                        <td>更新日期</td>
+                        <td id="td_updatedate"></td>
+                    </tr>
+                    <tr>
+                        <td>评分</td>
+                        <td id="td_score"></td>
+                    </tr>
+                    <tr>
+                        <td>累计下载</td>
+                        <td id="td_install"></td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="search_show_more" style="display: none;">
+            <div id="chart_install" style="width: 850px;height:500px;"></div>
+            <div id="chart_rate" style="width: 850px;height:500px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="../static/js/jquery.min.js"></script>
+<script src="../static/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script src="../static/js/holder.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+
+<script defer="defer" type="text/javascript">
+
+    $("#tb_hot_app button").click(
+            function () {
+                var app_name = $(this).text();
+                $.ajax({
+                    url: "/search/app/req",
+                    dateType: "json",
+                    data: {
+                        app_name: app_name
+                    },
+                    type: "GET",
+                    beforeSend: function () {
+                        $("#hot_search_list").hide();
+                        $("#loading").show();
+
+                    },
+                    success: function (data) {
+                        $("#loading").hide();
+                        $("#search_show_basic").show();
+                        $("#search_show_more").show();
+
+
+                        $("#title_search_result").text("'" + app_name + "' 查询结果");
+                        var app_info = data[0]["app_info"][0];
+                        var app_pkgname = app_info[0];
+                        var app_publisher = app_info[1];
+                        var app_classify = app_info[2];
+                        var app_version = app_info[3];
+                        var app_updatedate = app_info[4];
+                        var app_score = app_info[5];
+                        var app_install = app_info[6];
+                        var app_pic = app_info[7];
+
+                        var list_date = data[1]["list_date"];
+                        var list_install = data[1]["list_install"];
+                        var min_data = data[1]["min_data"];
+
+                        var list_rate_date = data[2]["list_rate_date"];
+                        var list_rate = data[2]["list_rate"];
+
+                        console.log(list_rate_date);
+                        console.log(list_rate);
+
+                        $("#th_img").attr("src", app_pic);
+                        $("#th_name").text(app_name);
+                        $("#td_pkgname").text(app_pkgname);
+                        $("#td_publisher").text(app_publisher);
+                        $("#td_classify").text(app_classify);
+                        $("#td_version").text(app_version);
+                        $("#td_updatedate").text(app_updatedate);
+                        $("#td_score").text(app_score);
+                        $("#td_install").text(app_install);
+
+
+                        var install_chart = echarts.init($("#chart_install").get(0), "");
+                        var install_option = {
+                            title: {
+                                text: '柱状图'
+                            },
+                            color: ['#3398DB'],
+                            tooltip : {
+                                trigger: 'axis',
+                                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    data : list_date,
+                                    axisTick: {
+                                        alignWithLabel: true
+                                    }
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value',
+                                    min: min_data
+                                }
+                            ],
+                            series : [
+                                {
+                                    name:'下载量',
+                                    type:'bar',
+                                    barWidth: '68%',
+                                    data:list_install,
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        }
+                                    }
+                                }
+                            ]
+                        };
+
+                        install_chart.setOption(install_option);
+
+                        var rate_chart = echarts.init($("#chart_rate").get(0), "");
+                        var rate_option = {
+                            title: {
+                                text: '过去一周下载增速',
+                                subtext: '纯属虚构'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data:['温度']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    dataZoom: {
+                                        yAxisIndex: 'none'
+                                    },
+                                    dataView: {readOnly: false},
+                                    magicType: {type: ['line', 'bar']},
+                                    restore: {},
+                                    saveAsImage: {}
+                                }
+                            },
+                            xAxis:  {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: list_rate_date
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            series: [
+                                {
+                                    name:'下载增速',
+                                    type:'line',
+                                    data:list_rate,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        };
+                        rate_chart.setOption(rate_option);
+
+                    },
+                    complete: function () {
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+    );
+
+    $("#search_show_more").onload = function () {
+        console.log("test");
+
+    };
+
+    $("#search_btn").click(
+            function () {
+                console.log($("#search_btn").text());
+                console.log($("#search_input").val());
+                var app_name = {"app_name" : $("#search_input").val()} ;
+{#                $.ajax({#}
+{#                    url: "/searchapp", //请求的url地址#}
+{#                    dataType: "json", //返回格式为json#}
+{#                    // async : true, //请求是否异步，默认为异步，这也是ajax重要特性#}
+{#                    data: app_name,    //参数值#}
+{#                    type: "GET", //请求方式#}
+{#                    beforeSend: function () {#}
+{#                        //请求前的处理#}
+{#                    },#}
+{##}
+{#                    success: function (data) {#}
+{#                        //请求成功时处理#}
+{#                        if(data.msg == "exact match") {#}
+{#                            var aim_app = data.apps;#}
+{#                            var str_turn = "./appdetail?pkgname=" + aim_app[2];#}
+{#                            window.location.href = str_turn;#}
+{#                        } else if(data.msg == "fuzzy match") {#}
+{#                            var aim_apps = data.apps;#}
+{#                            $("#rank_show").hide();#}
+{#                            $("#search_show").show();#}
+{#                            var tbody = "";#}
+{#                            for(var i=0; i<aim_apps.length; i++) {#}
+{#                                var str_tur = "./appdetail?pkgname=" + aim_apps[i][2];#}
+{#                                tbody += "<tr><td>" + (i + 1) + "</td><td><img src='" + aim_apps[i][0] + "'"#}
+{#                                        + " width=30 height=30>"#}
+{#                                        + "&nbsp;&nbsp;" + aim_apps[i][1] + "</td><td href='" + str_tur +"'>" + "查看详情" + "</td></tr>";#}
+{#                            }#}
+{#                            $("#search_tbl").append(tbody);#}
+{#                        } else {#}
+{#                            alert(data.msg);#}
+{#                        }#}
+{#                    },#}
+{##}
+{#                    complete: function () {#}
+{#                        //请求完成的处理#}
+{#                    },#}
+{##}
+{#                    error: function (err) {#}
+{#                        //请求出错处理#}
+{#                        console.log(err);#}
+{#                    }#}
+{#                });#}
+            }
+    )
+</script>
+</body></html>

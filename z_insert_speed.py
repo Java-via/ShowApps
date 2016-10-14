@@ -90,15 +90,19 @@ SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classif
                                       ORDER BY rateinstall DESC LIMIT 10);"""
 
 
-def insert_install_speed(soft_game):
+def insert_install_and_speed(soft_game):
     conn = pymysql.connect(host=SDB_HOST, db=SDB_DB, user=SDB_USER, passwd=SDB_PWD, charset=SDB_CHARSET)
     cur = conn.cursor()
     conn.autocommit(1)
     sql_install = SQL_YS_INSTALL_SOFTGAME
     sql_rate = SQL_YS_RATE_SOFTGAME
     try:
+        print("INSERT RATE BEGIN")
         cur.execute(sql_rate, soft_game)
+        print("INSERT RATE END")
+        print("INSERT INSTALL BEGIN")
         cur.execute(sql_install, soft_game)
+        print("INSERT INSTALL END")
         return
     except Exception as ex:
         logging.error("Insert speed error: %s", ex)
@@ -112,12 +116,20 @@ def insert_classify():
     sql_rate_classify = SQL_YS_RATE_CLASSIFY
     for key in config_yyb:
         try:
+            print("INSERT INSTALL BEGIN: %s" % key)
             cur.execute(sql_install_classify, key)
+            print("INSERT INSTALL END: %s" % key)
+            print("INSERT RATE BEGIN: %s" % key)
             cur.execute(sql_rate_classify, key)
+            print("INSERT RATE END: %s" % key)
         except Exception as ex:
             print("ERROR :", key, ex)
 
 if __name__ == "__main__":
-    insert_install_speed("soft")
-    insert_install_speed("game")
+    print("install_and_speed_soft start")
+    insert_install_and_speed("soft")
+    print("install_and_speed_game start")
+    insert_install_and_speed("game")
+    print("rate_classify start")
     insert_classify()
+    print("end")

@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 
-@app.route('/')
-def index_rank():
+@app.route("/")
+def index_rank_turn():
     """
     turn to index page
     :return:
@@ -19,7 +19,7 @@ def index_rank():
 
 
 @app.route("/all/speed")
-def softgame():
+def rank_softgame_turn():
     """
     turn to app top5 7days line chart
     :return:
@@ -45,8 +45,8 @@ def get_speed_top5_current():
         return "no data"
 
 
-@app.route('/index/classify')
-def index_classify():
+@app.route("/index/classify")
+def index_classify_turn():
     """
     turn to index page
     :return:
@@ -54,8 +54,8 @@ def index_classify():
     return render_template('c_index_classify.html')
 
 
-@app.route('/all/classify')
-def all_classify():
+@app.route("/all/classify")
+def all_classify_turn():
     """
     turn to index page
     :return:
@@ -63,7 +63,7 @@ def all_classify():
     return render_template('ca_classify_tbl_show.html')
 
 
-@app.route('/all/classify/req', methods=["POST", "GET"])
+@app.route("/all/classify/req", methods=["POST", "GET"])
 def get_classify():
     """
     show index page, top10 of soft, game, and speed
@@ -89,7 +89,7 @@ def get_classify():
 
 
 @app.route("/install/soft/current")
-def install_softcurrent():
+def install_softcurrent_turn():
     """
     turn to current 10 day's line chart of yesterday soft install top 10
     :return:
@@ -112,7 +112,7 @@ def get_install_soft_current():
 
 
 @app.route("/speed/soft/current")
-def speed_softcurrent():
+def speed_softcurrent_turn():
     """
     turn to current 10 day's line chart of yesterday soft speed top 10
     :return:
@@ -135,7 +135,7 @@ def get_speed_soft_current():
 
 
 @app.route("/install/game/current")
-def install_gamecurrent():
+def install_gamecurrent_turn():
     """
     turn to current 10 day's line chart of yesterday soft install top 10
     :return:
@@ -158,7 +158,7 @@ def get_install_game_current():
 
 
 @app.route("/speed/game/current")
-def speed_gamecurrent():
+def speed_gamecurrent_turn():
     """
     turn to current 10 day's line chart of yesterday game speed top 10
     :return:
@@ -180,7 +180,7 @@ def get_speed_game_current():
         return "no data"
 
 
-@app.route('/item/classify/req', methods=["POST", "GET"])
+@app.route("/item/classify/req", methods=["POST", "GET"])
 def get_item_classify():
     """
     show index page, top10 of soft, game, and speed
@@ -199,13 +199,44 @@ def get_item_classify():
         return "no data"
 
 
-@app.route('/index/search')
-def index_search():
+@app.route("/index/search")
+def index_search_turn():
     """
     turn to index page
     :return:
     """
-    return render_template('d_index_search.html')
+    return render_template("d_index_search.html")
+
+
+@app.route("/search/app", methods=["GET", "POST"])
+def search_app_turn():
+    """
+    turn to search page
+    :return:
+    """
+    return render_template("da_search_appdetail.html")
+
+
+@app.route("/search/app/req", methods=["GET", ])
+def get_app_byname():
+    """
+    get app detail by app name
+    :return:
+    """
+    app_name = flask_request.args.get("app_name")
+    list_date = []
+    list_rate_date = []
+    list_install = []
+    list_rate = []
+    dict_app_info, dict_app_install, dict_app_rate = search_app(app_name)
+    for item in dict_app_install["app_install"]:
+        list_date.append(item[0])
+        list_install.append(item[1])
+    for item in dict_app_rate["app_rate"]:
+        list_rate_date.append(item[0])
+        list_rate.append(item[1])
+    return jsonify(dict_app_info, {"min_data": list_install[0], "list_date": list_date[1:], "list_install": list_install[1:]},
+                   {"list_rate_date": list_rate_date, "list_rate": list_rate})
 
 
 @app.route("/everydaytop5")
@@ -242,27 +273,27 @@ def register():
         return jsonify({"msg": "fail"})
 
 
-@app.route("/searchapp", methods=["GET", "POST"])
-def search_app():
-    if flask_request.method == "GET":
-        app_name = flask_request.args.get("app_name")
-        logging.debug("App_name is : %s", app_name)
-        conn, cur = condb()
-        cur.execute("SELECT a_picurl, a_name, a_pkgname "
-                    "FROM t_apps_basic_united WHERE a_name = %s ORDER BY a_getdate DESC LIMIT 1;", app_name)
-        aim_app = cur.fetchall()
-        if len(aim_app) > 0:
-            logging.debug("Exact Match! Search result is %s", aim_app)
-            return jsonify({"msg": "exact match", "apps": aim_app})
-        else:
-            cur.execute("SELECT a_picurl, a_name, a_pkgname "
-                        "FROM t_apps_basic_united WHERE a_name like %s ORDER BY a_getdate DESC;",
-                        ("%" + app_name + "%"))
-            aim_apps = cur.fetchall()
-            logging.debug("Fuzzy Match! Search result is %s", aim_apps)
-            return jsonify({"msg": "fuzzy match", "apps": aim_apps})
-    else:
-        return jsonify({"msg": "wrong request method"})
+# @app.route("/searchapp", methods=["GET", "POST"])
+# def search_app():
+#     if flask_request.method == "GET":
+#         app_name = flask_request.args.get("app_name")
+#         logging.debug("App_name is : %s", app_name)
+#         conn, cur = condb()
+#         cur.execute("SELECT a_picurl, a_name, a_pkgname "
+#                     "FROM t_apps_basic_united WHERE a_name = %s ORDER BY a_getdate DESC LIMIT 1;", app_name)
+#         aim_app = cur.fetchall()
+#         if len(aim_app) > 0:
+#             logging.debug("Exact Match! Search result is %s", aim_app)
+#             return jsonify({"msg": "exact match", "apps": aim_app})
+#         else:
+#             cur.execute("SELECT a_picurl, a_name, a_pkgname "
+#                         "FROM t_apps_basic_united WHERE a_name like %s ORDER BY a_getdate DESC;",
+#                         ("%" + app_name + "%"))
+#             aim_apps = cur.fetchall()
+#             logging.debug("Fuzzy Match! Search result is %s", aim_apps)
+#             return jsonify({"msg": "fuzzy match", "apps": aim_apps})
+#     else:
+#         return jsonify({"msg": "wrong request method"})
 
 
 @app.route("/appdetail", methods=["GET", "POST"])
