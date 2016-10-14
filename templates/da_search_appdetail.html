@@ -127,6 +127,7 @@
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="search_show_more" style="display: none;">
             <div id="chart_install" style="width: 850px;height:500px;"></div>
+            <h2></h2>
             <div id="chart_rate" style="width: 850px;height:500px;"></div>
         </div>
     </div>
@@ -143,11 +144,12 @@
 <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
 
 <script defer="defer" type="text/javascript">
+    var search_ajax;
 
     $("#tb_hot_app button").click(
             function () {
                 var app_name = $(this).text();
-                $.ajax({
+                search_ajax =  $.ajax({
                     url: "/search/app/req",
                     dateType: "json",
                     data: {
@@ -183,6 +185,8 @@
                         var list_rate_date = data[2]["list_rate_date"];
                         var list_rate = data[2]["list_rate"];
 
+                        var rate_min = data[3]["rate_min"];
+
                         console.log(list_rate_date);
                         console.log(list_rate);
 
@@ -208,6 +212,13 @@
                                 axisPointer : {            // 坐标轴指示器，坐标轴触发有效
                                     type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                                 }
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: {type: ['line', 'bar']}
+                                },
+                                right: 70
                             },
                             grid: {
                                 left: '3%',
@@ -251,25 +262,15 @@
                         var rate_chart = echarts.init($("#chart_rate").get(0), "");
                         var rate_option = {
                             title: {
-                                text: '过去一周下载增速',
-                                subtext: '纯属虚构'
+                                text: '过去一周下载增速'
                             },
                             tooltip: {
                                 trigger: 'axis'
                             },
-                            legend: {
-                                data:['温度']
-                            },
                             toolbox: {
                                 show: true,
                                 feature: {
-                                    dataZoom: {
-                                        yAxisIndex: 'none'
-                                    },
-                                    dataView: {readOnly: false},
-                                    magicType: {type: ['line', 'bar']},
-                                    restore: {},
-                                    saveAsImage: {}
+                                    magicType: {type: ['line', 'bar']}
                                 }
                             },
                             xAxis:  {
@@ -278,7 +279,11 @@
                                 data: list_rate_date
                             },
                             yAxis: {
-                                type: 'value'
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} %'
+                                },
+                                min: rate_min
                             },
                             series: [
                                 {
@@ -312,58 +317,177 @@
             }
     );
 
-    $("#search_show_more").onload = function () {
-        console.log("test");
-
-    };
-
     $("#search_btn").click(
             function () {
-                console.log($("#search_btn").text());
-                console.log($("#search_input").val());
-                var app_name = {"app_name" : $("#search_input").val()} ;
-{#                $.ajax({#}
-{#                    url: "/searchapp", //请求的url地址#}
-{#                    dataType: "json", //返回格式为json#}
-{#                    // async : true, //请求是否异步，默认为异步，这也是ajax重要特性#}
-{#                    data: app_name,    //参数值#}
-{#                    type: "GET", //请求方式#}
-{#                    beforeSend: function () {#}
-{#                        //请求前的处理#}
-{#                    },#}
-{##}
-{#                    success: function (data) {#}
-{#                        //请求成功时处理#}
-{#                        if(data.msg == "exact match") {#}
-{#                            var aim_app = data.apps;#}
-{#                            var str_turn = "./appdetail?pkgname=" + aim_app[2];#}
-{#                            window.location.href = str_turn;#}
-{#                        } else if(data.msg == "fuzzy match") {#}
-{#                            var aim_apps = data.apps;#}
-{#                            $("#rank_show").hide();#}
-{#                            $("#search_show").show();#}
-{#                            var tbody = "";#}
-{#                            for(var i=0; i<aim_apps.length; i++) {#}
-{#                                var str_tur = "./appdetail?pkgname=" + aim_apps[i][2];#}
-{#                                tbody += "<tr><td>" + (i + 1) + "</td><td><img src='" + aim_apps[i][0] + "'"#}
-{#                                        + " width=30 height=30>"#}
-{#                                        + "&nbsp;&nbsp;" + aim_apps[i][1] + "</td><td href='" + str_tur +"'>" + "查看详情" + "</td></tr>";#}
-{#                            }#}
-{#                            $("#search_tbl").append(tbody);#}
-{#                        } else {#}
-{#                            alert(data.msg);#}
-{#                        }#}
-{#                    },#}
-{##}
-{#                    complete: function () {#}
-{#                        //请求完成的处理#}
-{#                    },#}
-{##}
-{#                    error: function (err) {#}
-{#                        //请求出错处理#}
-{#                        console.log(err);#}
-{#                    }#}
-{#                });#}
+                var app_name = $("#search_input").val();
+                $.ajax({
+                    url: "/search/app/req",
+                    dateType: "json",
+                    data: {
+                        app_name: app_name
+                    },
+                    type: "GET",
+                    beforeSend: function () {
+                        $("#hot_search_list").hide();
+                        $("#search_show_basic").hide();
+                        $("#search_show_more").hide();
+                        $("#loading").show();
+
+                    },
+                    success: function (data) {
+                        $("#loading").hide();
+                        $("#search_show_basic").show();
+                        $("#search_show_more").show();
+
+
+                        $("#title_search_result").text("'" + app_name + "' 查询结果");
+                        var app_info = data[0]["app_info"][0];
+                        var app_pkgname = app_info[0];
+                        var app_publisher = app_info[1];
+                        var app_classify = app_info[2];
+                        var app_version = app_info[3];
+                        var app_updatedate = app_info[4];
+                        var app_score = app_info[5];
+                        var app_install = app_info[6];
+                        var app_pic = app_info[7];
+
+                        var list_date = data[1]["list_date"];
+                        var list_install = data[1]["list_install"];
+                        var min_data = data[1]["min_data"];
+
+                        var list_rate_date = data[2]["list_rate_date"];
+                        var list_rate = data[2]["list_rate"];
+
+                        var rate_min = data[3]["rate_min"];
+
+                        console.log(list_rate_date);
+                        console.log(list_rate);
+
+                        $("#th_img").attr("src", app_pic);
+                        $("#th_name").text(app_name);
+                        $("#td_pkgname").text(app_pkgname);
+                        $("#td_publisher").text(app_publisher);
+                        $("#td_classify").text(app_classify);
+                        $("#td_version").text(app_version);
+                        $("#td_updatedate").text(app_updatedate);
+                        $("#td_score").text(app_score);
+                        $("#td_install").text(app_install);
+
+
+                        var install_chart = echarts.init($("#chart_install").get(0), "");
+                        var install_option = {
+                            title: {
+                                text: '柱状图'
+                            },
+                            color: ['#3398DB'],
+                            tooltip : {
+                                trigger: 'axis',
+                                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: {type: ['line', 'bar']}
+                                },
+                                right: 70
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    data : list_date,
+                                    axisTick: {
+                                        alignWithLabel: true
+                                    }
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value',
+                                    min: min_data
+                                }
+                            ],
+                            series : [
+                                {
+                                    name:'下载量',
+                                    type:'bar',
+                                    barWidth: '68%',
+                                    data:list_install,
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        }
+                                    }
+                                }
+                            ]
+                        };
+
+                        install_chart.setOption(install_option);
+
+                        var rate_chart = echarts.init($("#chart_rate").get(0), "");
+                        var rate_option = {
+                            title: {
+                                text: '过去一周下载增速'
+                            },
+                            tooltip: {
+                                trigger: 'axis'
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: {type: ['line', 'bar']}
+                                },
+                                right: 70
+                            },
+                            xAxis:  {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: list_rate_date
+                            },
+                            yAxis: {
+                                type: 'value',
+                                axisLabel: {
+                                    formatter: '{value} %'
+                                },
+                                min: rate_min
+                            },
+                            series: [
+                                {
+                                    name:'下载增速',
+                                    type:'line',
+                                    data:list_rate,
+                                    markPoint: {
+                                        data: [
+                                            {type: 'max', name: '最大值'},
+                                            {type: 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        };
+                        rate_chart.setOption(rate_option);
+
+                    },
+                    complete: function () {
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
             }
     )
 </script>

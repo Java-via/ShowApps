@@ -235,8 +235,13 @@ def get_app_byname():
     for item in dict_app_rate["app_rate"]:
         list_rate_date.append(item[0])
         list_rate.append(item[1])
-    return jsonify(dict_app_info, {"min_data": list_install[0], "list_date": list_date[1:], "list_install": list_install[1:]},
-                   {"list_rate_date": list_rate_date, "list_rate": list_rate})
+    list_rate = list(map(lambda x: float(x)*100, list_rate))
+    print(list_rate)
+    rate_min = float(min(list_rate)) * 0.9
+    return jsonify(dict_app_info,
+                   {"min_data": list_install[0], "list_date": list_date[1:], "list_install": list_install[1:]},
+                   {"list_rate_date": list_rate_date, "list_rate": list_rate},
+                   {"rate_min": rate_min})
 
 
 @app.route("/everydaytop5")

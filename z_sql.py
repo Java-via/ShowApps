@@ -7,14 +7,14 @@ SQL_YS_INSTALL_TOP_SOFTGAME = """SELECT
                                   FROM
                                     t_apps_speed
                                   WHERE
-                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) AND a_isspeed = 0 AND
+                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) AND a_isspeed = 0 AND
                                     a_classify = "综合" AND
                                     a_softgame = %s ORDER BY a_id;"""
 
 # yesterday speed top10 softgame
 SQL_YS_SPEED_TOP_SOGTGAME = """SELECT a_getdate, a_picurl, a_pkgname, a_name,
                                       TRUNCATE(a_rateinstall*100,2), CONCAT(a_ysinstall," --> ",a_tdinstall) FROM t_apps_speed
-                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) AND a_isspeed = 1 AND
+                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) AND a_isspeed = 1 AND
                                       a_classify = "综合" AND
                                       a_softgame = %s ORDER BY a_id;"""
 
@@ -27,13 +27,13 @@ SQL_CRNT_SPEED_TOP_SOFTGAME = """SELECT t1.a_pkgname, t1.a_name, t1.a_getdate, C
                                     SELECT a_pkgname
                                     FROM t_apps_speed
                                     WHERE a_softgame = %s AND a_isspeed = 1 AND a_classify = "综合" AND
-                                        DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) ORDER BY a_id
+                                        DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) ORDER BY a_id
                                   ) t0
                                   WHERE
                                   t1.a_pkgname = t0.a_pkgname AND t2.a_pkgname = t0.a_pkgname AND
                                   t1.a_source = "yyb" AND t2.a_source = "yyb" AND
                                   t1.a_getdate BETWEEN DATE(DATE_SUB(LOCALTIME,INTERVAL 10 DAY)) AND
-                                  DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) AND
+                                  DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) AND
                                   t2.a_getdate = DATE_SUB(t1.a_getdate,INTERVAL 1 DAY);"""
 
 # current 10 day's install of yesterday install top10 softgame
@@ -46,12 +46,12 @@ SQL_CRNT_INSTALL_TOP_SOFTGAME = """SELECT t1.a_pkgname, t1.a_name, t1.a_getdate,
                                               t_apps_speed
                                           WHERE
                                               a_isspeed = 0 AND a_softgame = %s AND a_classify = "综合" AND
-                                              DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) ORDER BY a_id
+                                              DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) ORDER BY a_id
                                         ) t0
                                     WHERE t1.a_pkgname = t0.a_pkgname AND
                                           t1.a_source = "yyb" AND
                                           t1.a_getdate BETWEEN DATE(DATE_SUB(LOCALTIME,INTERVAL 10 DAY))
-                                                        AND DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY));"""
+                                                        AND DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY));"""
 
 # yesterday install top10 classify
 SQL_YS_INSTALL_TOP_CLASSIFY = """SELECT
@@ -59,14 +59,14 @@ SQL_YS_INSTALL_TOP_CLASSIFY = """SELECT
                                   FROM
                                       t_apps_speed
                                   WHERE
-                                  DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) AND a_isspeed = 0 AND
+                                  DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) AND a_isspeed = 0 AND
                                   a_classify = %s ORDER BY a_id;"""
 
 # yesterday speed top10 classify
 SQL_YS_SPEED_TOP_CLASSIFY = """SELECT a_getdate, a_picurl, a_pkgname, a_name,
                                       TRUNCATE(a_rateinstall*100,2), CONCAT(a_ysinstall," --> ",a_tdinstall)
                                 FROM t_apps_speed
-                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 2 DAY)) AND a_isspeed = 1 AND
+                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 3 DAY)) AND a_isspeed = 1 AND
                                       a_classify = %s ORDER BY a_id;"""
 
 # search app by name
