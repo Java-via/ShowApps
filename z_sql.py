@@ -70,7 +70,7 @@ SQL_YS_SPEED_TOP_CLASSIFY = """SELECT a_getdate, a_picurl, a_pkgname, a_name,
                                       a_classify = %s ORDER BY a_id;"""
 
 # search app by name
-SQL_SEARCH_APP_NAME = """SELECT
+SQL_SEARCH_APP_BASIC_NAME = """SELECT
                               t0.a_pkgname, t0.a_publisher, t0.a_classify,
                               t1.a_version, t1.a_updatedate, t1.a_score, t1.a_install, t1.a_picurl
                           FROM t_apps_additional_new t1, t_apps_basic_new t0
@@ -78,13 +78,13 @@ SQL_SEARCH_APP_NAME = """SELECT
                                 t0.a_source = "yyb" AND t1.a_source = "yyb" AND
                                 t1.a_name = %s AND DATE(t1.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY));"""
 
-# search app by name install
+# search app current install by name
 SQL_SEARCH_APP_INSTALL_NAME = """SELECT a_getdate, a_install FROM t_apps_additional_new
                                   WHERE a_name = %s AND a_source = "yyb" AND
                                   DATE(a_getdate) BETWEEN DATE(DATE_SUB(LOCALTIME,INTERVAL 8 DAY)) AND
                                                           DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY));"""
 
-# search app by name rate
+# search app current rate by name
 SQL_SEARCH_APP_RATE_NAME = """SELECT t0.a_getdate, CAST(ROUND(1.0*(t0.a_install-t1.a_install)/t1.a_install*100,4) AS CHAR) AS rate
                               FROM t_apps_additional_new t1,
                                     (
@@ -94,4 +94,8 @@ SQL_SEARCH_APP_RATE_NAME = """SELECT t0.a_getdate, CAST(ROUND(1.0*(t0.a_install-
                                                                       DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY))
                                     ) t0
                               WHERE t1.a_pkgname = t0.a_pkgname AND t1.a_source = "yyb" AND
-                                    t1.a_getdate = DATE_SUB(t0.a_getdate,INTERVAL 1 DAY)"""
+                                    t1.a_getdate = DATE_SUB(t0.a_getdate,INTERVAL 1 DAY);"""
+
+# search similarity app by name
+SQL_SEARCH_SIMILARITY_APP_NAME = """SELECT a_name FROM t_apps_basic_new
+                                    WHERE a_source = 'yyb' AND a_name LIKE '%s%%';"""
