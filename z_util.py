@@ -291,6 +291,7 @@ def search_app(app_name):
     conn, cur = condb()
     sql_basic = SQL_SEARCH_APP_NAME
     sql_install = SQL_SEARCH_APP_INSTALL_NAME
+    # SQL_SEARCH_APP_RATE_NAME rate is already turn to percent
     sql_rate = SQL_SEARCH_APP_RATE_NAME
     try:
         cur.execute(sql_basic, (app_name, app_name))
