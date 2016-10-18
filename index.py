@@ -15,7 +15,7 @@ def index_rank_turn():
     turn to index page
     :return:
     """
-    return render_template('b_index_speed.html')
+    return render_template('ca_classify_tbl_show.html')
 
 
 @app.route("/all/speed")
@@ -321,4 +321,4 @@ def show_app_detail():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", threaded=True)
+    app.run(debug=True, host="0.0.0.0", port=8000, threaded=True)

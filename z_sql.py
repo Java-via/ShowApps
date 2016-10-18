@@ -7,14 +7,14 @@ SQL_YS_INSTALL_TOP_SOFTGAME = """SELECT
                                   FROM
                                     t_apps_speed
                                   WHERE
-                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND a_isspeed = 0 AND
+                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY)) AND a_isspeed = 0 AND
                                     a_classify = "综合" AND
                                     a_softgame = %s ORDER BY a_id;"""
 
 # yesterday speed top10 softgame
 SQL_YS_SPEED_TOP_SOGTGAME = """SELECT a_getdate, a_picurl, a_pkgname, a_name,
                                       ROUND(a_rateinstall*100,2), CONCAT(a_ysinstall," --> ",a_tdinstall) FROM t_apps_speed
-                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND a_isspeed = 1 AND
+                                WHERE DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY)) AND a_isspeed = 1 AND
                                       a_classify = "综合" AND
                                       a_softgame = %s ORDER BY a_id;"""
 

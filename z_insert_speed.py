@@ -26,7 +26,7 @@ SQL_YS_INSTALL_SOFTGAME = """INSERT INTO t_apps_speed (a_getdate, a_pkgname, a_n
                                       WHERE
                                           a_softgame = %s AND
                                           DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
-                                          a_source = "yyb" ORDER BY a_install DESC LIMIT 10;"""
+                                          a_source = "yyb" ORDER BY a_install DESC LIMIT 100;"""
 
 SQL_YS_RATE_SOFTGAME = """INSERT INTO t_apps_speed
                             (a_pkgname, a_name, a_url, a_picurl, a_updatedate, a_version,
@@ -45,13 +45,13 @@ SQL_YS_RATE_SOFTGAME = """INSERT INTO t_apps_speed
                                 FROM
                                     t_apps_additional_new
                                 WHERE
-                                    a_source = "yyb" AND a_softgame = "soft" AND
+                                    a_source = "yyb" AND a_softgame = %s AND
                                     DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY))
                               ) t0
                             WHERE
                                 t1.a_source = "yyb" AND t1.a_pkgname = t0.a_pkgname AND t1.a_install > 10000 AND
                                 DATE(t1.a_getdate) = DATE_SUB(t0.a_getdate,INTERVAL 1 DAY)
-                            ORDER BY rate DESC LIMIT 10;"""
+                            ORDER BY rate DESC LIMIT 100;"""
 
 SQL_YS_INSTALL_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classify, a_url,
                                                       a_picurl, a_updatedate, a_version,
@@ -66,7 +66,7 @@ SQL_YS_INSTALL_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_clas
                                                               WHERE a_source = "yyb" AND a_classify = %s) t1
                             WHERE t2.a_source = "yyb" AND t2.a_pkgname = t1.a_pkgname AND
                                   DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY))
-                            ORDER BY t2.a_install DESC LIMIT 10); """
+                            ORDER BY t2.a_install DESC LIMIT 50); """
 
 
 SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classify, a_url,
@@ -88,7 +88,7 @@ SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classif
                                             DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
                                             t3.a_source = "yyb" AND t3.a_pkgname = t2.a_pkgname AND
                                             t3.a_getdate = DATE_SUB(t2.a_getdate,INTERVAL 1 DAY)
-                                      ORDER BY rateinstall DESC LIMIT 10);"""
+                                      ORDER BY rateinstall DESC LIMIT 50);"""
 
 
 def insert_install_and_speed(soft_game):
