@@ -304,13 +304,16 @@ def search_app(app_name):
             list_app_info = [(item[0], item[1], item[2], item[3], item[4].strftime("%Y-%m-%d"), item[5], item[6], item[7]) for item in app_info]
             list_app_install = [(item[0].strftime("%Y-%m-%d"), item[1]) for item in app_install]
             list_app_rate = [(item[0].strftime("%Y-%m-%d"), item[1]) for item in app_rate]
-            dict_app_info = {"app_info": list_app_info}
-            dict_app_install = {"app_install": list_app_install}
-            dict_app_rate = {"app_rate": list_app_rate}
-            print(dict_app_rate)
-            return dict_app_info, dict_app_install, dict_app_rate
+            return "react", list_app_info, list_app_install, list_app_rate
         else:
-            return "no date"
+            sql_similarity_app = SQL_SEARCH_SIMILARITY_APP_NAME
+            cur.execute(sql_similarity_app, app_name)
+            list_app_name = cur.fetchall()
+            if list_app_name:
+                list_app_name = list(list_app_name)
+                return "similarity", list_app_name
+            else:
+                return "no date"
     except Exception as ex:
         logging.error("Search app by name error: %s", ex)
         return "error"

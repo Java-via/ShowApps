@@ -228,20 +228,28 @@ def get_app_byname():
     list_rate_date = []
     list_install = []
     list_rate = []
-    dict_app_info, dict_app_install, dict_app_rate = search_app(app_name)
-    for item in dict_app_install["app_install"]:
-        list_date.append(item[0])
-        list_install.append(item[1])
-    for item in dict_app_rate["app_rate"]:
-        list_rate_date.append(item[0])
-        list_rate.append(item[1])
-    list_rate = list(list_rate)
-    print(list_rate)
-    rate_min = float(min(list_rate)) * 0.9
-    return jsonify(dict_app_info,
-                   {"min_data": list_install[0], "list_date": list_date[1:], "list_install": list_install[1:]},
-                   {"list_rate_date": list_rate_date, "list_rate": list_rate},
-                   {"rate_min": rate_min})
+    list_similarity_name = []
+    if search_app(app_name)[0] == "react":
+        list_app_info, list_app_install, list_app_rate = search_app(app_name)[1:]
+        for item in list_app_install:
+            list_date.append(item[0])
+            list_install.append(item[1])
+        for item in list_app_rate:
+            list_rate_date.append(item[0])
+            list_rate.append(item[1])
+        list_rate = list(list_rate)
+        print(list_rate)
+        rate_min = float(min(list_rate)) * 0.9
+        return jsonify({"msg": "react", "app_info": list_app_info, "min_data": list_install[0],
+                        "list_date": list_date[1:], "list_install": list_install[1:],
+                        "list_rate_date": list_rate_date, "list_rate": list_rate,
+                        "rate_min": rate_min})
+    elif search_app(app_name)[0] == "similarity":
+        list_similarity_name = search_app(app_name)[1:]
+        print(list_similarity_name)
+        return jsonify({"msg": "similarity", "list_name": list_similarity_name})
+    else:
+        return jsonify({"msg": "no data"})
 
 
 @app.route("/everydaytop5")
