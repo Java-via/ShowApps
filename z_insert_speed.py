@@ -83,7 +83,7 @@ SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classif
                                             t2.a_source, t2.a_getdate, 1
                                       FROM t_apps_additional_new t3, t_apps_additional_new t2,
                                           (SELECT a_pkgname, a_classify FROM t_apps_basic_new
-                                            WHERE a_source = "yyb" AND a_classify = %s ) t1
+                                            WHERE a_source = "yyb" AND a_classify = %s AND a_install > 10000) t1
                                       WHERE t2.a_source = "yyb" AND t2.a_pkgname = t1.a_pkgname AND
                                             DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
                                             t3.a_source = "yyb" AND t3.a_pkgname = t2.a_pkgname AND

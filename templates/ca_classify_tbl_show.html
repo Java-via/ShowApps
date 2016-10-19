@@ -68,27 +68,27 @@
 
             <div class="row" id="dv_install_soft">
                 <div class="col-md-6">
-                    <h3 >应用综合TOP10    <a href="/install/soft/current" style="font-size: 15px">查看近期</a></h3>
+                    <h3 >应用综合TOP100    <a href="/install/soft/current" style="font-size: 15px">查看近期</a></h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_soft">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>install</th>
+                                <th>排名</th>
+                                <th>应用名</th>
+                                <th>累积下载</th>
                             </tr>
                         </table>
                     </div>
                 </div>
                 <div class="col-md-0.5"></div>
                 <div class="col-md-6" id="dv_speed_soft_top10">
-                    <h3 >应用增速TOP10    <a href="/speed/soft/current" style="font-size: 15px">查看近期</a></h3>
+                    <h3 >应用增速TOP100    <a href="/speed/soft/current" style="font-size: 15px">查看近期</a></h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_soft_speed">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>speed</th>
-                                <th>rate</th>
+                                <th>排名</th>
+                                <th>应用名</th>
+                                <th>下载变化</th>
+                                <th>下载增速</th>
                             </tr>
                         </table>
                     </div>
@@ -97,27 +97,27 @@
 
             <div class="row" id="dv_install_game">
                 <div class="col-md-6">
-                    <h3 >游戏综合TOP10    <a href="/install/game/current" style="font-size: 15px">查看近期</a></h3>
+                    <h3 >游戏综合TOP100    <a href="/install/game/current" style="font-size: 15px">查看近期</a></h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_game">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>install</th>
+                                <th>排名</th>
+                                <th>游戏名</th>
+                                <th>累积下载</th>
                             </tr>
                         </table>
                     </div>
                 </div>
                 <div class="col-md-0.5"></div>
                 <div class="col-md-6" id="dv_speed_game_top10">
-                    <h3 >游戏增速TOP10    <a href="/speed/game/current" style="font-size: 15px">查看近期</a></h3>
+                    <h3 >游戏增速TOP100    <a href="/speed/game/current" style="font-size: 15px">查看近期</a></h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_game_speed">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>speed</th>
-                                <th>rate</th>
+                                <th>排名</th>
+                                <th>游戏名</th>
+                                <th>下载变化</th>
+                                <th>下载增速</th>
                             </tr>
                         </table>
                     </div>
@@ -130,27 +130,27 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <h3 >应用综合TOP10</h3>
+                    <h3 >累计下载TOP50</h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_classify">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>install</th>
+                                <th>排名</th>
+                                <th>应用名</th>
+                                <th>累积下载</th>
                             </tr>
                         </table>
                     </div>
                 </div>
                 <div class="col-md-0.5"></div>
                 <div class="col-md-6" id="dv_speed_classify_top10">
-                    <h3 >应用增速TOP10</h3>
+                    <h3 >昨日增速TOP50</h3>
                     <div class="table-responsive">
                         <table class="table table-striped" id="ranking_classify_speed">
                             <tr>
-                                <th>ranking</th>
-                                <th>name</th>
-                                <th>speed</th>
-                                <th>rate</th>
+                                <th>排名</th>
+                                <th>应用名</th>
+                                <th>下载变化</th>
+                                <th>下载增速</th>
                             </tr>
                         </table>
                     </div>
@@ -292,8 +292,8 @@
                                 if(data != "no data") {
                                     $("#loading").hide();
                                     $("#classify_show").show();
-                                    $("#ranking_classify tbody").html("");
-                                    $("#ranking_classify_speed tbody").html("");
+                                    $("#ranking_classify tr:not(:first)").html("");
+                                    $("#ranking_classify_speed tr:not(:first)").html("");
                                     var ranking_classify = data[2]["rankinfo_classify"];
                                     var speeding_classify = data[3]["speed_classify"];
                                     var name_classify = [];
@@ -356,8 +356,8 @@
                                 if(data != "no data") {
                                     $("#loading").hide();
                                     $("#classify_show").show();
-                                    $("#ranking_classify tbody").html("");
-                                    $("#ranking_classify_speed tbody").html("");
+                                    $("#ranking_classify tr:not(:first)").html("");
+                                    $("#ranking_classify_speed tr:not(:first)").html("");
                                     var ranking_classify = data[2]["rankinfo_classify"];
                                     var speeding_classify = data[3]["speed_classify"];
                                     var name_classify = [];
