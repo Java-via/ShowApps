@@ -7,6 +7,7 @@
 *.egg
 *.egg-info
 *.jpg
+*.log
 dist
 build
 eggs
