@@ -29,11 +29,11 @@ SQL_YS_INSTALL_SOFTGAME = """INSERT INTO t_apps_speed (a_getdate, a_pkgname, a_n
                                           a_source = "yyb" ORDER BY a_install DESC LIMIT 100;"""
 
 SQL_YS_RATE_SOFTGAME = """INSERT INTO t_apps_speed
-                            (a_pkgname, a_name, a_url, a_picurl, a_updatedate, a_version,
+                            (a_pkgname, a_name, a_classify, a_url, a_picurl, a_updatedate, a_version,
                             a_ysinstall, a_tdinstall, a_rateinstall,
                             a_like, a_comment, a_score, a_softgame, a_source, a_getdate, a_isspeed)
                             SELECT
-                                t0.a_pkgname, t0.a_name, t0.a_url, t0.a_picurl, t0.a_updatedate, t0.a_version,
+                                t0.a_pkgname, t0.a_name, "综合", t0.a_url, t0.a_picurl, t0.a_updatedate, t0.a_version,
                                 t1.a_install AS ysinstall, t0.a_install AS tdinstall, 1.0*(t0.a_install-t1.a_install)/t1.a_install AS rate,
                                 t0.a_like, t0.a_comment, t0.a_score, t0.a_softgame, t0.a_source, t0.a_getdate AS td, 1
                             FROM
@@ -83,10 +83,12 @@ SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classif
                                             t2.a_source, t2.a_getdate, 1
                                       FROM t_apps_additional_new t3, t_apps_additional_new t2,
                                           (SELECT a_pkgname, a_classify FROM t_apps_basic_new
-                                            WHERE a_source = "yyb" AND a_classify = %s AND a_install > 10000) t1
+                                            WHERE a_source = "yyb" AND a_classify = %s) t1
                                       WHERE t2.a_source = "yyb" AND t2.a_pkgname = t1.a_pkgname AND
+                                            t2.a_install > 10000 AND
                                             DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
                                             t3.a_source = "yyb" AND t3.a_pkgname = t2.a_pkgname AND
+                                            t3.a_install > 10000 AND
                                             t3.a_getdate = DATE_SUB(t2.a_getdate,INTERVAL 1 DAY)
                                       ORDER BY rateinstall DESC LIMIT 50);"""
 
@@ -116,6 +118,7 @@ def insert_classify():
     sql_install_classify = SQL_YS_INSTALL_CLASSIFY
     sql_rate_classify = SQL_YS_RATE_CLASSIFY
     for key in config_yyb:
+        key = "出行" if key == "导航" else key
         try:
             print("INSERT INSTALL BEGIN: %s" % key)
             cur.execute(sql_install_classify, key)

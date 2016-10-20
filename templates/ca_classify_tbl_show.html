@@ -273,6 +273,9 @@
 
                     $("#soft_tags_list li:gt(0)").click(function () {
                         var text = $(this).text();
+                        if(text == "导航") {
+                            text = "出行";
+                        }
                         $.ajax({
                             url: "/item/classify/req", //请求的url地址
                             dataType: "json", //返回格式为json
