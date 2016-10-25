@@ -25,7 +25,7 @@ SQL_YS_INSTALL_SOFTGAME = """INSERT INTO t_apps_speed (a_getdate, a_pkgname, a_n
                                       FROM t_apps_additional_new
                                       WHERE
                                           a_softgame = %s AND
-                                          DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
+                                          DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY)) AND
                                           a_source = "yyb" ORDER BY a_install DESC LIMIT 100;"""
 
 SQL_YS_RATE_SOFTGAME = """INSERT INTO t_apps_speed
@@ -46,7 +46,7 @@ SQL_YS_RATE_SOFTGAME = """INSERT INTO t_apps_speed
                                     t_apps_additional_new
                                 WHERE
                                     a_source = "yyb" AND a_softgame = %s AND
-                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY))
+                                    DATE(a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY))
                               ) t0
                             WHERE
                                 t1.a_source = "yyb" AND t1.a_pkgname = t0.a_pkgname AND t1.a_install > 10000 AND
@@ -65,7 +65,7 @@ SQL_YS_INSTALL_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_clas
                             FROM t_apps_additional_new t2, (SELECT a_pkgname, a_classify FROM t_apps_basic_new
                                                               WHERE a_source = "yyb" AND a_classify = %s) t1
                             WHERE t2.a_source = "yyb" AND t2.a_pkgname = t1.a_pkgname AND
-                                  DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY))
+                                  DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY))
                             ORDER BY t2.a_install DESC LIMIT 50); """
 
 
@@ -86,7 +86,7 @@ SQL_YS_RATE_CLASSIFY = """INSERT INTO t_apps_speed (a_pkgname, a_name, a_classif
                                             WHERE a_source = "yyb" AND a_classify = %s) t1
                                       WHERE t2.a_source = "yyb" AND t2.a_pkgname = t1.a_pkgname AND
                                             t2.a_install > 10000 AND
-                                            DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 1 DAY)) AND
+                                            DATE(t2.a_getdate) = DATE(DATE_SUB(LOCALTIME,INTERVAL 0 DAY)) AND
                                             t3.a_source = "yyb" AND t3.a_pkgname = t2.a_pkgname AND
                                             t3.a_install > 10000 AND
                                             t3.a_getdate = DATE_SUB(t2.a_getdate,INTERVAL 1 DAY)
