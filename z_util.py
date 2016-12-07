@@ -6,7 +6,7 @@ from urllib import request
 from z_sql import *
 
 # ----server----
-SDB_HOST = "101.200.174.172"
+SDB_HOST = "localhost"
 SDB_DB = "data_apps"
 SDB_USER = "dba_apps"
 SDB_PWD = "mimadba_apps"
